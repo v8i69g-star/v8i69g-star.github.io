@@ -62,7 +62,7 @@ body{display:grid;grid-template-columns:380px 1fr;height:100dvh;overflow:hidden}
 <aside id="side">
   <header>
     <h1>林宅二工 木構 3D 細項索引</h1>
-    <p>料單 v6（2026-10-30）・事務所 10/30 回覆・模型 林宅二工_20261013（Rhino 材料分層）。整理 2026-11-02。點選任一列，模型會轉到該構件。</p>
+    <p>料單 v6／v7 初步估價（2026-11-02）・事務所 10/30 回覆・模型 林宅二工_20261013（Rhino 材料分層）。整理 2026-11-02。點選任一列，模型會轉到該構件。</p>
   </header>
   <div id="mcard"></div>
   <div id="list"></div>
@@ -106,7 +106,7 @@ const IT={
  14:{z:'D',t:'1F 雨遮擱柵',sec:'4×8',n:7,L:8.579,V:0.027,st:'ask',office:'結構已補圖，數量正確',note:'結構補圖我們未取得，材質待確認'},
  15:{z:'D',t:'1F 雨遮邊梁',sec:'16×8',n:4,L:11.84,V:0.152,st:'ask',office:'結構已補圖(橘色那支梁)，但非承重結構技師不畫(白色那支梁)，請幫忙一起算入數量正確',note:'結構補圖我們未取得，材質待確認'},
  16:{z:'D',t:'車庫棚架梁',sec:'8×24',n:2,L:12.3,V:0.236,st:'ask',office:'結構已補圖，數量正確',note:'結構補圖我們未取得，材質待確認'},
- 17:{z:'C',t:'車庫梁族群（未拆）',sec:'—',n:1,L:null,V:null,st:'ours',office:'不太確定是在說哪項構件，請截圖說明',note:'模型族群 1 組，範圍約 4.76 × 2.96 m，高程約 GL+2.40～2.64'},
+ 17:{z:'C',t:'車庫梁族群（拆開）',sec:'2.5×6／6×18',n:5,L:16.595,V:0.069,st:'ours',office:'不太確定是在說哪項構件，請截圖說明',note:'模型族群拆開：4 支 2.5×6 cm × 2.96 m（@1.10 m）＋1 支 6×18 cm × 4.755 m（1 軸側），高程約 GL+2.40～2.64；2.5×6 斷面很小，可能不是集成材'},
  18:{z:'A',t:'1F 前後院 C2 柱（事務所缺項 1）',sec:'16×8',n:2,L:7.2,V:0.092,st:'ask',office:'缺項 1：1F 前後院（A 外、D 外）C2 柱 16×8，2 支，7.2 m',note:'模型沒有這兩支；可能就是項次 1（見問題 2）'}
 };
 const ST={ask:['問事務所','p-ask'],ours:['我們回','p-ours'],wait:['等事務所','p-wait'],ok:['已確認／可估價','p-ok']};
@@ -180,7 +180,7 @@ function highlight(items,pri){
   else{const b=boxOf(Object.keys(meshes).map(Number));frame(b);}
 }
 document.getElementById('shell').onchange=e=>{if(shell)shell.visible=e.target.checked;};
-document.getElementById('all').onclick=()=>{mark(null);highlight(null);show('<h2>全部木構</h2><p style="margin:0;font-size:13.5px">報價範圍（A＋B＋D）4.589 m³；含 C 區待確認 5.167 m³。淨料，不含損耗與五金。點左邊列表看各項。</p>');};
+document.getElementById('all').onclick=()=>{mark(null);highlight(null);show('<h2>全部木構</h2><p style="margin:0;font-size:13.5px">v6 報價範圍（A＋B＋D）4.589 m³。v7 初步估價（不確定項目先計入、項次 17 拆開、項次 7 暫列事務所多的 2 支 11 m、材料先假設 GLT GL28h）5.500 m³。淨料，不含損耗與五金。點左邊列表看各項。</p>');};
 camera.position.set(3200,2400,3600);controls.target.set(0,0,0);
 function resize(){const r=stage.getBoundingClientRect();renderer.setSize(r.width,r.height,false);camera.aspect=r.width/Math.max(r.height,1);camera.updateProjectionMatrix();}
 addEventListener('resize',resize);
