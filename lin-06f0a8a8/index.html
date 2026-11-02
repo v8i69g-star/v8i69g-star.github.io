@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>林宅二工木構 3D 細項索引</title>
+<style>
+:root{
+  --bg:#f3f4f2;--panel:#ffffff;--ink:#1c2220;--ink2:#4a5450;--ink3:#7c8682;--line:#dde1de;
+  --glt:#c27a2c;--deco:#d8b680;--tbd:#7d8a96;--conf:#a7774a;--hi:#d0342c;--hi-bg:#fbeceb;
+  --ask:#b3261e;--ours:#1f5f8b;--wait:#6b6f2a;--ok:#2f7a4b;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#141716;--panel:#1c201e;--ink:#e8ecea;--ink2:#b9c2be;--ink3:#8a9490;--line:#303734;
+  --hi-bg:#3a2321;--ask:#f2867c;--ours:#7fb8e0;--wait:#c9cd84;--ok:#7fcf9c;color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:15px/1.6 "Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif}
+body{display:grid;grid-template-columns:380px 1fr;height:100dvh;overflow:hidden}
+#side{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--line);background:var(--panel)}
+#side header{padding:calc(env(safe-area-inset-top) + 14px) 16px 10px;border-bottom:1px solid var(--line)}
+#side header h1{font-size:17px;margin:0 0 2px}
+#side header p{margin:0;font-size:12px;color:var(--ink3)}
+#list{overflow:auto;flex:1;min-height:0;padding:6px 0 24px}
+.grp{font-size:11.5px;letter-spacing:.08em;color:var(--ink3);padding:14px 16px 4px}
+.row{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;align-items:baseline;padding:8px 16px;cursor:pointer;border-left:3px solid transparent}
+.row:hover{background:var(--bg)}
+.row.on{background:var(--hi-bg);border-left-color:var(--hi)}
+.row .no{font:500 12px ui-monospace,Consolas,monospace;color:var(--ink3);min-width:3.2em}
+.row .t{font-size:14px}
+.row .s{grid-column:2/4;font-size:12px;color:var(--ink3)}
+.pill{font-size:11px;padding:0 7px;border-radius:9px;white-space:nowrap;border:1px solid currentColor}
+.p-ask{color:var(--ask)}.p-ours{color:var(--ours)}.p-wait{color:var(--wait)}.p-ok{color:var(--ok)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+#main{position:relative;min-width:0;min-height:0;display:grid;grid-template-rows:1fr auto}
+#stage{position:relative;min-height:0;touch-action:none}
+#stage canvas{display:block;width:100%;height:100%}
+#tools{position:absolute;top:10px;right:10px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+#tools button,#tools label{font:inherit;font-size:12.5px;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:4px 10px;cursor:pointer}
+#legend{position:absolute;left:10px;top:10px;font-size:12px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 10px;display:grid;gap:2px;opacity:.95}
+.lbl{position:absolute;transform:translate(-50%,-120%);background:var(--hi);color:#fff;font-size:12px;padding:1px 7px;border-radius:4px;white-space:nowrap;pointer-events:none}
+#card{background:var(--panel);border-top:1px solid var(--line);padding:12px 16px calc(env(safe-area-inset-bottom) + 14px);max-height:42dvh;overflow:auto}
+:is(#card,#mcard) h2{font-size:16px;margin:0 0 6px;display:flex;gap:8px;flex-wrap:wrap;align-items:baseline}
+:is(#card,#mcard) dl{display:grid;grid-template-columns:max-content 1fr;gap:3px 14px;margin:6px 0;font-size:13.5px}
+:is(#card,#mcard) dt{color:var(--ink3)}:is(#card,#mcard) dd{margin:0;min-width:0}
+:is(#card,#mcard) .q{margin-top:8px;padding:8px 12px;border-left:3px solid var(--ask);background:var(--hi-bg);font-size:13.5px}
+:is(#card,#mcard) .q b{color:var(--ask)}
+.mono{font-family:ui-monospace,Consolas,monospace}
+#load{position:absolute;inset:0;display:grid;place-items:center;color:var(--ink3);font-size:14px}
+@media (max-width:820px){
+  body{grid-template-columns:1fr;grid-template-rows:46dvh 1fr}
+  #main{grid-row:1;grid-template-rows:1fr}
+  #card{position:absolute;left:0;right:0;bottom:0;max-height:24dvh;display:none}
+  #side{grid-row:2;border-right:0;border-top:1px solid var(--line)}
+  #legend{display:none}
+  #mcard{display:block!important}
+}
+#mcard{display:none;padding:10px 16px;border-bottom:1px solid var(--line);font-size:13.5px}
+</style>
+</head>
+<body>
+<aside id="side">
+  <header>
+    <h1>林宅二工 木構 3D 細項索引</h1>
+    <p>料單 v6（2026-10-30）・事務所 10/30 回覆・模型 林宅二工_20261013（Rhino 材料分層）。整理 2026-11-02。點選任一列，模型會轉到該構件。</p>
+  </header>
+  <div id="mcard"></div>
+  <div id="list"></div>
+</aside>
+<main id="main">
+  <div id="stage">
+    <div id="load">模型載入中…</div>
+    <div id="legend">
+      <div><span class="sw" style="background:var(--glt)"></span>A 結構圖 GLT GL28h</div>
+      <div><span class="sw" style="background:var(--deco)"></span>B 裝飾木梁</div>
+      <div><span class="sw" style="background:var(--tbd)"></span>C 待確認（僅模型）</div>
+      <div><span class="sw" style="background:var(--conf)"></span>D 1F 雨遮、車庫棚架</div>
+      <div><span class="sw" style="background:var(--hi)"></span>目前選取（第 2 種顏色＝對照項）</div>
+    </div>
+    <div id="tools">
+      <label><input type="checkbox" id="shell" checked> 建築外殼</label>
+      <button type="button" id="all">全部木構</button>
+    </div>
+  </div>
+  <section id="card"></section>
+</main>
+
+<script src="three.min.js"></script>
+<script src="OrbitControls.js"></script>
+<script>
+// ---- 料單 v6 細項 ----
+const IT={
+ 1:{z:'A',t:'2F 陽台 C2 柱',sec:'16×8',n:2,L:7.5,V:0.096,st:'ask',office:'（空白）',note:'GL 到 2F，每支 3.75 m（模型 S-COLS 160x80）'},
+ 2:{z:'A',t:'3F 陽台 C2 柱',sec:'16×8',n:2,L:11.472,V:0.147,st:'ask',office:'模型測量約1.9米',note:'模型為 2F（GL+3.90）一支連續到屋頂簷，5.70～5.78 m'},
+ 3:{z:'A',t:'3F 雨遮 WD1 擱柵',sec:'4×8',n:46,L:57.704,V:0.185,st:'ok',office:'可先這樣估價，細部作法待討論',note:'順坡斜長'},
+ 4:{z:'A',t:'3F 雨遮 WD2 邊梁',sec:'16×8',n:4,L:11.84,V:0.152,st:'ok',office:'（空白）',note:'每側 2 支 × 2.96 m'},
+ 5:{z:'A',t:'屋頂簷 WD1 擱柵',sec:'4×8',n:46,L:58.168,V:0.186,st:'ok',office:'（空白）',note:'順坡斜長'},
+ 6:{z:'A',t:'屋頂簷 WD2 邊梁',sec:'16×8',n:4,L:11.84,V:0.152,st:'ok',office:'（空白）',note:'每側 2 支 × 2.96 m'},
+ 7:{z:'B',t:'2F 樓板下（1F 天花）裝飾梁',sec:'8×15',n:22,L:77.69,V:0.932,st:'ask',office:'=11*2+3.65*11+3.65*5+3.65*5+1.08*1（99.73 m）',note:'我們 3.65×21＋1.04×1'},
+ 8:{z:'B',t:'3F 樓板下（2F 天花）裝飾梁',sec:'8×15',n:23,L:69.85,V:0.838,st:'ok',office:'（空白）',note:'18×3.65＋5×0.83'},
+ 9:{z:'B',t:'屋頂下（3F 天花）裝飾梁',sec:'8×10',n:21,L:67.03,V:0.536,st:'ask',office:'=3.704*5*2+3.65*9+1.08*4（74.21 m）',note:'我們 B–C 7 支 3.65 m'},
+ 10:{z:'B',t:'2F、3F 陽台下裝飾梁',sec:'8×15',n:44,L:71.5,V:0.858,st:'ok',office:'（空白）',note:'每側每層 11 支 × 1.625 m'},
+ 11:{z:'C',t:'A、D 軸 8×15 梁',sec:'8×15',n:6,L:36,V:0.432,st:'ask',office:'這根需要是木構嗎？設計上是做 8*15木樑收WD1 擱柵',note:'GL+2.55／+6.15／+9.75 各一支 6 m，A、D 兩側'},
+ 12:{z:'C',t:'屋頂 B–C 15×10',sec:'15×10',n:1,L:3.65,V:0.055,st:'wait',office:'不太確定是在說哪項構件，請截圖說明',note:'3F 玻璃隔間正上方，距 2 軸約 2.15 m'},
+ 13:{z:'C',t:'屋頂 B–C 25×10（1 軸）',sec:'25×10',n:1,L:3.65,V:0.091,st:'wait',office:'不太確定是在說哪項構件，請截圖說明',note:'1 軸牆頂、RC 屋頂版下方'},
+ 14:{z:'D',t:'1F 雨遮擱柵',sec:'4×8',n:7,L:8.579,V:0.027,st:'ask',office:'結構已補圖，數量正確',note:'結構補圖我們未取得，材質待確認'},
+ 15:{z:'D',t:'1F 雨遮邊梁',sec:'16×8',n:4,L:11.84,V:0.152,st:'ask',office:'結構已補圖(橘色那支梁)，但非承重結構技師不畫(白色那支梁)，請幫忙一起算入數量正確',note:'結構補圖我們未取得，材質待確認'},
+ 16:{z:'D',t:'車庫棚架梁',sec:'8×24',n:2,L:12.3,V:0.236,st:'ask',office:'結構已補圖，數量正確',note:'結構補圖我們未取得，材質待確認'},
+ 17:{z:'C',t:'車庫梁族群（未拆）',sec:'—',n:1,L:null,V:null,st:'ours',office:'不太確定是在說哪項構件，請截圖說明',note:'模型族群 1 組，範圍約 4.76 × 2.96 m，高程約 GL+2.40～2.64'},
+ 18:{z:'A',t:'1F 前後院 C2 柱（事務所缺項 1）',sec:'16×8',n:2,L:7.2,V:0.092,st:'ask',office:'缺項 1：1F 前後院（A 外、D 外）C2 柱 16×8，2 支，7.2 m',note:'模型沒有這兩支；可能就是項次 1（見問題 2）'}
+};
+const ST={ask:['問事務所','p-ask'],ours:['我們回','p-ours'],wait:['等事務所','p-wait'],ok:['已確認／可估價','p-ok']};
+// ---- 待確認問題 ----
+const Q=[
+ {k:'Q1',items:[17],who:'ours',t:'車庫梁族群是什麼構件',q:'事務所要我們截圖說明（模型裡就是這一組）。要回問：這片車庫頂是木構嗎？構件斷面、支數？結構補圖裡有沒有畫？'},
+ {k:'Q2',items:[1,2,18],pri:[1],who:'ask',t:'C2 柱可能重複計算',q:'我們每側 2 段（GL→2F 3.75 m＋2F→屋頂簷約 5.74 m）已是全高。缺項 1 的「1F C2 柱」是不是就是項次 1？項次 2 的「約 1.9 米」是不是 3F→屋頂簷那段？若重複，項次 18 拿掉（−0.092 m³）。這是推測，待事務所確認。'},
+ {k:'Q3',items:[7],who:'ask',t:'項次 7 事務所多 2 支 11 m',q:'21 支 3.65 m 兩邊一樣，事務所多了 2 支 11 m，模型和天花圖 B6-01 都找不到。請在圖上標位置與斷面。（±0.264 m³）'},
+ {k:'Q4',items:[9,12,13],pri:[12,13],who:'ask',t:'項次 9 B–C 事務所 9 支、我們 7 支',q:'多的 2 支是不是項次 12（15×10）和 13（25×10）？項次 12 剛好落在 50 cm 間距少一支的位置（紅＝項次 12、13，藍＝項次 9）。若是，12、13 併入項次 9。（±0.058 m³）'},
+ {k:'Q5',items:[11],who:'ask',t:'A、D 軸 8×15 要不要做木構',q:'6 支 × 6 m，0.432 m³，目前不在報價範圍。請事務所／結構技師決定材料。'},
+ {k:'Q6',items:[14,15,16],who:'ask',t:'1F 雨遮、車庫棚架缺結構補圖',q:'數量已計入報價範圍（0.415 m³），但結構補圖我們沒拿到。請提供補圖，並確認材料是否為 GLT GL28h。'},
+ {k:'Q7',items:[7,8,9,10],who:'ask',t:'裝飾木梁規格未指定',q:'項次 7～10 共 3.165 m³（占報價範圍約 7 成），圖面沒有樹種、等級、表面處理。請事務所提供規格。'}
+];
+const ZC={A:'#c27a2c',B:'#d8b680',C:'#7d8a96',D:'#a7774a'};
+
+// ---- 列表 ----
+const list=document.getElementById('list');
+function row(no,t,s,st,on){const d=document.createElement('div');d.className='row';d.tabIndex=0;
+  d.innerHTML=`<span class="no">${no}</span><span class="t">${t}</span><span class="pill ${ST[st][1]}">${ST[st][0]}</span><span class="s">${s}</span>`;
+  d.onclick=on;d.onkeydown=e=>{if(e.key==='Enter')on()};list.appendChild(d);return d;}
+function grp(t){const d=document.createElement('div');d.className='grp';d.textContent=t;list.appendChild(d);}
+const rows=[];
+grp('待確認問題（報價前要釐清）');
+Q.forEach(q=>rows.push([row(q.k,q.t,'項次 '+q.items.join('、'),q.who,()=>selectQ(q)),'q'+q.k]));
+const zn={A:'A 區　結構圖標示 GLT GL28h',B:'B 區　裝飾木梁（非結構）',D:'D 區　1F 雨遮、車庫棚架（已計入）',C:'C 區　待確認（僅模型，未計入報價範圍）'};
+['A','B','D','C'].forEach(z=>{grp(zn[z]);Object.keys(IT).map(Number).filter(i=>IT[i].z===z).forEach(i=>{const it=IT[i];
+  rows.push([row('項次 '+i,it.t,`${it.sec}　${it.n} 支　${it.L??'—'} m　${it.V??'—'} m³`,it.st,()=>selectItem(i)),'i'+i]);});});
+function mark(key){rows.forEach(([d,k])=>d.classList.toggle('on',k===key));}
+
+// ---- 卡片 ----
+const card=document.getElementById('card'),mcard=document.getElementById('mcard');
+function itemDl(i){const it=IT[i];return `<dt>項次 ${i}</dt><dd>${it.t}，${it.sec}，${it.n} 支，${it.L??'—'} m，${it.V??'—'} m³</dd><dt>事務所原文</dt><dd>${it.office}</dd><dt>我們的備註</dt><dd>${it.note}</dd>`;}
+function show(html){card.innerHTML=html;mcard.innerHTML=html;}
+function selectQ(q){mark('q'+q.k);highlight(q.items,q.pri);
+  show(`<h2>${q.k}　${q.t}<span class="pill ${ST[q.who][1]}">${ST[q.who][0]}</span></h2><div class="q"><b>問題：</b>${q.q}</div><dl>${q.items.map(itemDl).join('')}</dl>`);}
+function selectItem(i){mark('i'+i);highlight([i]);const it=IT[i];
+  show(`<h2>項次 ${i}　${it.t}<span class="pill ${ST[it.st][1]}">${ST[it.st][0]}</span></h2><dl>${itemDl(i)}</dl>`+(i===18?'<div class="q"><b>注意：</b>模型裡沒有這兩支柱，畫面顯示的是項次 1，供對照。</div>':''));}
+
+// ---- 3D ----
+const stage=document.getElementById('stage');
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));stage.prepend(renderer.domElement);
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(40,1,10,50000);
+const controls=new THREE.OrbitControls(camera,renderer.domElement);controls.enableDamping=true;
+scene.add(new THREE.HemisphereLight(0xffffff,0x8a8f88,0.95));const dl=new THREE.DirectionalLight(0xffffff,0.55);dl.position.set(1,2,1.4);scene.add(dl);
+const C0=new THREE.Vector3(2208,600,-2328);
+function dec(b64,T){const s=atob(b64),u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return new T(u.buffer);}
+function geom(v,f){const a=dec(v,Int16Array),p=new Float32Array(a.length);for(let i=0;i<a.length;i+=3){p[i]=a[i]-C0.x;p[i+1]=a[i+2]-C0.y;p[i+2]=-a[i+1]-C0.z;}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(p,3));g.setIndex(new THREE.BufferAttribute(dec(f,Uint32Array),1));g.computeVertexNormals();g.computeBoundingBox();return g;}
+let shell;const meshes={};
+const labelsEl=[];
+fetch('model.json').then(r=>r.json()).then(d=>{
+  document.getElementById('load').remove();
+  shell=new THREE.Mesh(geom(d.ctx.v,d.ctx.f),new THREE.MeshLambertMaterial({color:0xb9bdb8,transparent:true,opacity:.16,depthWrite:false,side:THREE.DoubleSide}));scene.add(shell);
+  d.parts.forEach(p=>{const it=IT[p.i];const m=new THREE.Mesh(geom(p.v,p.f),new THREE.MeshLambertMaterial({color:ZC[it.z],transparent:true,opacity:1}));m.userData.item=p.i;scene.add(m);(meshes[p.i]=meshes[p.i]||[]).push(m);});
+  resize();highlight(null);animate();
+});
+function boxOf(items){const b=new THREE.Box3();items.forEach(i=>(meshes[i]||[]).forEach(m=>b.union(m.geometry.boundingBox)));return b;}
+let fly=null;
+function frame(b){if(b.isEmpty())return;const c=b.getCenter(new THREE.Vector3()),s=Math.max(b.getSize(new THREE.Vector3()).length(),350);
+  const dir=camera.position.clone().sub(controls.target).normalize();if(dir.y<.25){dir.y=.45;dir.normalize();}
+  fly={t0:performance.now(),p0:camera.position.clone(),q0:controls.target.clone(),p1:c.clone().add(dir.multiplyScalar(s*1.35)),q1:c};}
+function highlight(items,pri){
+  const sel=items?new Set(items.map(i=>i===18?1:i)):null;
+  const prim=new Set(pri||[...(sel||[])]);
+  Object.entries(meshes).forEach(([i,ms])=>ms.forEach(m=>{const on=sel&&sel.has(+i);
+    m.material.color.set(on?(prim.has(+i)?'#d0342c':'#1f6fd1'):ZC[IT[i].z]);m.material.opacity=!sel||on?1:.22;m.material.depthWrite=!sel||on;m.renderOrder=on?2:1;}));
+  labelsEl.forEach(e=>e.remove());labelsEl.length=0;
+  if(sel){sel.forEach(i=>{const b=boxOf([i]);if(b.isEmpty())return;const e=document.createElement('div');e.className='lbl';if(!prim.has(i))e.style.background='#1f6fd1';e.textContent='項次 '+(items.includes(18)&&i===1?'1／18':i);e.dataset.p=JSON.stringify(b.getCenter(new THREE.Vector3()).toArray());stage.appendChild(e);labelsEl.push(e);});
+    frame(boxOf([...sel]));}
+  else{const b=boxOf(Object.keys(meshes).map(Number));frame(b);}
+}
+document.getElementById('shell').onchange=e=>{if(shell)shell.visible=e.target.checked;};
+document.getElementById('all').onclick=()=>{mark(null);highlight(null);show('<h2>全部木構</h2><p style="margin:0;font-size:13.5px">報價範圍（A＋B＋D）4.589 m³；含 C 區待確認 5.167 m³。淨料，不含損耗與五金。點左邊列表看各項。</p>');};
+camera.position.set(3200,2400,3600);controls.target.set(0,0,0);
+function resize(){const r=stage.getBoundingClientRect();renderer.setSize(r.width,r.height,false);camera.aspect=r.width/Math.max(r.height,1);camera.updateProjectionMatrix();}
+addEventListener('resize',resize);
+function animate(){requestAnimationFrame(animate);
+  if(fly){let k=Math.min((performance.now()-fly.t0)/700,1);k=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;camera.position.lerpVectors(fly.p0,fly.p1,k);controls.target.lerpVectors(fly.q0,fly.q1,k);if(k>=1)fly=null;}
+  controls.update();renderer.render(scene,camera);
+  const r=stage.getBoundingClientRect();labelsEl.forEach(e=>{const v=new THREE.Vector3().fromArray(JSON.parse(e.dataset.p)).project(camera);e.style.left=((v.x+1)/2*r.width)+'px';e.style.top=((1-v.y)/2*r.height)+'px';e.style.display=v.z<1?'':'none';});}
+document.getElementById('all').click();
+</script>
+</body>
+</html>
