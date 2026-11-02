@@ -62,7 +62,7 @@ body{display:grid;grid-template-columns:380px 1fr;height:100dvh;overflow:hidden}
 <aside id="side">
   <header>
     <h1>林宅二工 木構 3D 細項索引</h1>
-    <p>料單 v6／v7 初步估價（2026-11-02）・事務所 10/30 回覆・模型 林宅二工_20261013（Rhino 材料分層）。整理 2026-11-02。點選任一列，模型會轉到該構件。</p>
+    <p>料單 v7 初步估價（2026-11-02，對應 Excel「20261102」分頁）・事務所 10/30 回覆・模型 林宅二工_20261013（Rhino 材料分層）。整理 2026-11-02。點選任一列，模型會轉到該構件。</p>
   </header>
   <div id="mcard"></div>
   <div id="list"></div>
@@ -71,15 +71,15 @@ body{display:grid;grid-template-columns:380px 1fr;height:100dvh;overflow:hidden}
   <div id="stage">
     <div id="load">模型載入中…</div>
     <div id="legend">
-      <div><span class="sw" style="background:var(--glt)"></span>A 結構圖 GLT GL28h</div>
-      <div><span class="sw" style="background:var(--deco)"></span>B 裝飾木梁</div>
-      <div><span class="sw" style="background:var(--tbd)"></span>C 待確認（僅模型）</div>
-      <div><span class="sw" style="background:var(--conf)"></span>D 1F 雨遮、車庫棚架</div>
+      <div><span class="sw" style="background:var(--glt)"></span>結構 GLT GL28h</div>
+      <div><span class="sw" style="background:var(--deco)"></span>裝飾木梁</div>
+      <div><span class="sw" style="background:var(--tbd)"></span>模型才有的木構（暫列）</div>
+      <div><span class="sw" style="background:var(--conf)"></span>1F 雨遮、車庫棚架</div>
       <div><span class="sw" style="background:var(--hi)"></span>目前選取（第 2 種顏色＝對照項）</div>
     </div>
     <div id="tools">
       <label><input type="checkbox" id="shell" checked> 建築外殼</label>
-      <button type="button" id="all">全部木構</button>
+      <button type="button" id="all">合計總覽</button>
     </div>
   </div>
   <section id="card"></section>
@@ -107,18 +107,22 @@ const IT={
  15:{z:'D',t:'1F 雨遮邊梁',sec:'16×8',n:4,L:11.84,V:0.152,st:'ask',office:'結構已補圖(橘色那支梁)，但非承重結構技師不畫(白色那支梁)，請幫忙一起算入數量正確',note:'結構補圖我們未取得，材質待確認'},
  16:{z:'D',t:'車庫棚架梁',sec:'8×24',n:2,L:12.3,V:0.236,st:'ask',office:'結構已補圖，數量正確',note:'結構補圖我們未取得，材質待確認'},
  17:{z:'C',t:'車庫梁族群（拆開）',sec:'2.5×6／6×18',n:5,L:16.595,V:0.069,st:'ours',office:'不太確定是在說哪項構件，請截圖說明',note:'模型族群拆開：4 支 2.5×6 cm × 2.96 m（@1.10 m）＋1 支 6×18 cm × 4.755 m（1 軸側），高程約 GL+2.40～2.64；2.5×6 斷面很小，可能不是集成材'},
+ 19:{z:'B',lab:'7+',t:'事務所多算的 2 支 11 m 裝飾梁（位置未明）',sec:'8×15',n:2,L:22,V:0.264,st:'ask',office:'項次 7 公式中的 11*2',note:'模型與天花圖 B6-01 都找不到；斷面先假設同項次 7。畫面顯示項次 7 供對照'},
  18:{z:'A',t:'1F 前後院 C2 柱（事務所缺項 1）',sec:'16×8',n:2,L:7.2,V:0.092,st:'ask',office:'缺項 1：1F 前後院（A 外、D 外）C2 柱 16×8，2 支，7.2 m',note:'模型沒有這兩支；可能就是項次 1（見問題 2）'}
 };
-const ST={ask:['問事務所','p-ask'],ours:['我們回','p-ours'],wait:['等事務所','p-wait'],ok:['已確認／可估價','p-ok']};
+const V7={11:'暫列',12:'暫列',13:'暫列',17:'暫列',18:'暫列',19:'暫列'};
+const lab=i=>IT[i].lab||String(i);
+const grpOf=i=>({A:'S',B:'B',D:'D',C:'M'})[IT[i].z];
+const ST={tmp:['暫列','p-ask'],cf:['確認','p-ok'],ask:['問事務所','p-ask'],ours:['我們回','p-ours'],wait:['等事務所','p-wait'],ok:['已確認／可估價','p-ok']};
 // ---- 待確認問題 ----
 const Q=[
- {k:'Q1',items:[17],who:'ours',t:'車庫梁族群是什麼構件',q:'事務所要我們截圖說明（模型裡就是這一組）。要回問：這片車庫頂是木構嗎？構件斷面、支數？結構補圖裡有沒有畫？'},
- {k:'Q2',items:[1,2,18],pri:[1],who:'ask',t:'C2 柱可能重複計算',q:'我們每側 2 段（GL→2F 3.75 m＋2F→屋頂簷約 5.74 m）已是全高。缺項 1 的「1F C2 柱」是不是就是項次 1？項次 2 的「約 1.9 米」是不是 3F→屋頂簷那段？若重複，項次 18 拿掉（−0.092 m³）。這是推測，待事務所確認。'},
- {k:'Q3',items:[7],who:'ask',t:'項次 7 事務所多 2 支 11 m',q:'21 支 3.65 m 兩邊一樣，事務所多了 2 支 11 m，模型和天花圖 B6-01 都找不到。請在圖上標位置與斷面。（±0.264 m³）'},
- {k:'Q4',items:[9,12,13],pri:[12,13],who:'ask',t:'項次 9 B–C 事務所 9 支、我們 7 支',q:'多的 2 支是不是項次 12（15×10）和 13（25×10）？項次 12 剛好落在 50 cm 間距少一支的位置（紅＝項次 12、13，藍＝項次 9）。若是，12、13 併入項次 9。（±0.058 m³）'},
- {k:'Q5',items:[11],who:'ask',t:'A、D 軸 8×15 要不要做木構',q:'6 支 × 6 m，0.432 m³，目前不在報價範圍。請事務所／結構技師決定材料。'},
- {k:'Q6',items:[14,15,16],who:'ask',t:'1F 雨遮、車庫棚架缺結構補圖',q:'數量已計入報價範圍（0.415 m³），但結構補圖我們沒拿到。請提供補圖，並確認材料是否為 GLT GL28h。'},
- {k:'Q7',items:[7,8,9,10],who:'ask',t:'裝飾木梁規格未指定',q:'項次 7～10 共 3.165 m³（占報價範圍約 7 成），圖面沒有樹種、等級、表面處理。請事務所提供規格。'}
+ {k:'Q1',items:[17],who:'ours',t:'車庫梁族群是什麼構件',q:'事務所要我們截圖說明（模型裡就是這一組）。v7 已從模型拆開：4 支 2.5×6 cm × 2.96 m＋1 支 6×18 cm × 4.755 m，0.069 m³，暫列計入。要回問：這片車庫頂是木構嗎？構件斷面、支數？結構補圖裡有沒有畫？'},
+ {k:'Q2',items:[1,2,18],pri:[1],who:'ask',t:'C2 柱可能重複計算',q:'我們每側 2 段（GL→2F 3.75 m＋2F→屋頂簷約 5.74 m）已是全高。缺項 1 的「1F C2 柱」是不是就是項次 1？項次 2 的「約 1.9 米」是不是 3F→屋頂簷那段？v7 先把項次 18 暫列計入；若重複，扣 0.092 m³。這是推測，待事務所確認。'},
+ {k:'Q3',items:[7,19],pri:[7],who:'ask',t:'項次 7 事務所多 2 支 11 m',q:'21 支 3.65 m 兩邊一樣，事務所多了 2 支 11 m，模型和天花圖 B6-01 都找不到。請在圖上標位置與斷面。v7 先暫列為項次 7+（0.264 m³），若不需要就扣掉。'},
+ {k:'Q4',items:[9,12,13],pri:[12,13],who:'ask',t:'項次 9 B–C 事務所 9 支、我們 7 支',q:'多的 2 支是不是項次 12（15×10）和 13（25×10）？項次 12 剛好落在 50 cm 間距少一支的位置（紅＝項次 12、13，藍＝項次 9）。v7 先把 12、13 暫列計入、項次 9 維持 7 支，不重複加。'},
+ {k:'Q5',items:[11],who:'ask',t:'A、D 軸 8×15 要不要做木構',q:'6 支 × 6 m，0.432 m³。v7 先暫列計入。請事務所／結構技師決定是否做木構。'},
+ {k:'Q6',items:[14,15,16],who:'ask',t:'1F 雨遮、車庫棚架缺結構補圖',q:'數量已確認並計入（0.415 m³），但結構補圖我們沒拿到。v7 材料先假設 GLT GL28h，請提供補圖並確認材料。'},
+ {k:'Q7',items:[7,8,9,10],who:'ask',t:'裝飾木梁規格未指定',q:'項次 7～10 共 3.165 m³（占合計約 6 成），圖面沒有樹種、等級、表面處理。v7 先假設 GLT GL28h，請事務所提供規格。'}
 ];
 const ZC={A:'#c27a2c',B:'#d8b680',C:'#7d8a96',D:'#a7774a'};
 
@@ -130,20 +134,23 @@ function row(no,t,s,st,on){const d=document.createElement('div');d.className='ro
 function grp(t){const d=document.createElement('div');d.className='grp';d.textContent=t;list.appendChild(d);}
 const rows=[];
 grp('待確認問題（報價前要釐清）');
-Q.forEach(q=>rows.push([row(q.k,q.t,'項次 '+q.items.join('、'),q.who,()=>selectQ(q)),'q'+q.k]));
-const zn={A:'A 區　結構圖標示 GLT GL28h',B:'B 區　裝飾木梁（非結構）',D:'D 區　1F 雨遮、車庫棚架（已計入）',C:'C 區　待確認（僅模型，未計入報價範圍）'};
-['A','B','D','C'].forEach(z=>{grp(zn[z]);Object.keys(IT).map(Number).filter(i=>IT[i].z===z).forEach(i=>{const it=IT[i];
-  rows.push([row('項次 '+i,it.t,`${it.sec}　${it.n} 支　${it.L??'—'} m　${it.V??'—'} m³`,it.st,()=>selectItem(i)),'i'+i]);});});
+Q.forEach(q=>rows.push([row(q.k,q.t,'項次 '+q.items.map(lab).join('、'),q.who,()=>selectQ(q)),'q'+q.k]));
+const GN={S:'結構 GLT GL28h（結構圖有標）',B:'裝飾木梁（非結構）',D:'1F 雨遮、車庫棚架',M:'模型才有的木構（暫列）'};
+const SUB={S:'1.009',B:'3.429',D:'0.415',M:'0.647'};
+const ORD={S:[1,2,3,4,5,6,18],B:[7,8,9,10,19],D:[14,15,16],M:[11,12,13,17]};
+grp('v7 初步估價料單（2026-11-02）');
+['S','B','D','M'].forEach(g=>{const ids=ORD[g];grp(`${GN[g]}　小計 ${SUB[g]} m³`);ids.forEach(i=>{const it=IT[i];
+  rows.push([row('項次 '+lab(i),it.t,`${it.sec}　${it.n} 支　${it.L} m　${it.V} m³`,V7[i]?'tmp':'cf',()=>selectItem(i)),'i'+i]);});});
 function mark(key){rows.forEach(([d,k])=>d.classList.toggle('on',k===key));}
 
 // ---- 卡片 ----
 const card=document.getElementById('card'),mcard=document.getElementById('mcard');
-function itemDl(i){const it=IT[i];return `<dt>項次 ${i}</dt><dd>${it.t}，${it.sec}，${it.n} 支，${it.L??'—'} m，${it.V??'—'} m³</dd><dt>事務所原文</dt><dd>${it.office}</dd><dt>我們的備註</dt><dd>${it.note}</dd>`;}
+function itemDl(i){const it=IT[i];return `<dt>項次 ${lab(i)}</dt><dd>${it.t}，${it.sec}，${it.n} 支，${it.L} m，${it.V} m³</dd><dt>v7</dt><dd>${V7[i]||'確認'}；材料${it.z==='A'?' GLT GL28h（結構圖）':'先假設 GLT GL28h（圖面未指定）'}</dd><dt>事務所原文</dt><dd>${it.office}</dd><dt>我們的備註</dt><dd>${it.note}</dd>`;}
 function show(html){card.innerHTML=html;mcard.innerHTML=html;}
 function selectQ(q){mark('q'+q.k);highlight(q.items,q.pri);
   show(`<h2>${q.k}　${q.t}<span class="pill ${ST[q.who][1]}">${ST[q.who][0]}</span></h2><div class="q"><b>問題：</b>${q.q}</div><dl>${q.items.map(itemDl).join('')}</dl>`);}
-function selectItem(i){mark('i'+i);highlight([i]);const it=IT[i];
-  show(`<h2>項次 ${i}　${it.t}<span class="pill ${ST[it.st][1]}">${ST[it.st][0]}</span></h2><dl>${itemDl(i)}</dl>`+(i===18?'<div class="q"><b>注意：</b>模型裡沒有這兩支柱，畫面顯示的是項次 1，供對照。</div>':''));}
+function selectItem(i){mark('i'+i);highlight([i]);const it=IT[i];const qs=Q.filter(q=>q.items.includes(i));
+  show(`<h2>項次 ${lab(i)}　${it.t}<span class="pill ${V7[i]?'p-ask':'p-ok'}">${V7[i]||'確認'}</span></h2><dl>${itemDl(i)}</dl>`+(i===18?'<div class="q"><b>注意：</b>模型裡沒有這兩支柱，畫面顯示的是項次 1，供對照。</div>':'')+(i===19?'<div class="q"><b>注意：</b>模型裡沒有這 2 支，畫面顯示的是項次 7，供對照。</div>':'')+qs.map(q=>`<div class="q"><b>${q.k} ${q.t}：</b>${q.q}</div>`).join(''));}
 
 // ---- 3D ----
 const stage=document.getElementById('stage');
@@ -170,17 +177,17 @@ function frame(b){if(b.isEmpty())return;const c=b.getCenter(new THREE.Vector3())
   const dir=camera.position.clone().sub(controls.target).normalize();if(dir.y<.25){dir.y=.45;dir.normalize();}
   fly={t0:performance.now(),p0:camera.position.clone(),q0:controls.target.clone(),p1:c.clone().add(dir.multiplyScalar(s*1.35)),q1:c};}
 function highlight(items,pri){
-  const sel=items?new Set(items.map(i=>i===18?1:i)):null;
+  const sel=items?new Set(items.map(i=>i===18?1:i===19?7:i)):null;
   const prim=new Set(pri||[...(sel||[])]);
   Object.entries(meshes).forEach(([i,ms])=>ms.forEach(m=>{const on=sel&&sel.has(+i);
     m.material.color.set(on?(prim.has(+i)?'#d0342c':'#1f6fd1'):ZC[IT[i].z]);m.material.opacity=!sel||on?1:.22;m.material.depthWrite=!sel||on;m.renderOrder=on?2:1;}));
   labelsEl.forEach(e=>e.remove());labelsEl.length=0;
-  if(sel){sel.forEach(i=>{const b=boxOf([i]);if(b.isEmpty())return;const e=document.createElement('div');e.className='lbl';if(!prim.has(i))e.style.background='#1f6fd1';e.textContent='項次 '+(items.includes(18)&&i===1?'1／18':i);e.dataset.p=JSON.stringify(b.getCenter(new THREE.Vector3()).toArray());stage.appendChild(e);labelsEl.push(e);});
+  if(sel){sel.forEach(i=>{const b=boxOf([i]);if(b.isEmpty())return;const e=document.createElement('div');e.className='lbl';if(!prim.has(i))e.style.background='#1f6fd1';e.textContent='項次 '+(items.includes(18)&&i===1?'1／18':items.includes(19)&&i===7?'7／7+':i);e.dataset.p=JSON.stringify(b.getCenter(new THREE.Vector3()).toArray());stage.appendChild(e);labelsEl.push(e);});
     frame(boxOf([...sel]));}
   else{const b=boxOf(Object.keys(meshes).map(Number));frame(b);}
 }
 document.getElementById('shell').onchange=e=>{if(shell)shell.visible=e.target.checked;};
-document.getElementById('all').onclick=()=>{mark(null);highlight(null);show('<h2>全部木構</h2><p style="margin:0;font-size:13.5px">v6 報價範圍（A＋B＋D）4.589 m³。v7 初步估價（不確定項目先計入、項次 17 拆開、項次 7 暫列事務所多的 2 支 11 m、材料先假設 GLT GL28h）5.500 m³。淨料，不含損耗與五金。點左邊列表看各項。</p>');};
+document.getElementById('all').onclick=()=>{mark(null);highlight(null);show('<h2>v7 初步估價合計 5.500 m³<span class="pill p-ok">確認 4.497</span><span class="pill p-ask">暫列 1.003</span></h2><dl><dt>結構 GLT GL28h</dt><dd>1.009 m³</dd><dt>裝飾木梁</dt><dd>3.429 m³（含暫列 7+）</dd><dt>1F 雨遮、車庫棚架</dt><dd>0.415 m³</dd><dt>模型才有的木構</dt><dd>0.647 m³（全部暫列）</dd></dl><p style="margin:0;font-size:13px">不確定的先算進去（暫列），會重複的只算一次（項次 9 多的 2 支＝項次 12、13）。圖面未指定材料者先假設 GLT GL28h。淨料，不含損耗、接頭加長、五金、表面處理。</p>');};
 camera.position.set(3200,2400,3600);controls.target.set(0,0,0);
 function resize(){const r=stage.getBoundingClientRect();renderer.setSize(r.width,r.height,false);camera.aspect=r.width/Math.max(r.height,1);camera.updateProjectionMatrix();}
 addEventListener('resize',resize);
