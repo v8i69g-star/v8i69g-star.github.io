@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>林宅木構範圍</title>
+<style>
+:root{
+  --bg:#f3f4f2;--panel:#ffffff;--ink:#1c2220;--ink2:#4a5450;--ink3:#7c8682;--line:#dde1de;
+  --wood:#d0342c;--wood-bg:#fbeceb;--gray:#9aa09c;--stage:#eef0ee;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141716;--panel:#1c201e;--ink:#e8ecea;--ink2:#b9c2be;--ink3:#8a9490;--line:#303734;
+  --wood:#f0544a;--wood-bg:#3a2321;--gray:#6d7470;--stage:#1a1d1c;color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:15px/1.6 "Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif}
+body{display:grid;grid-template-columns:360px 1fr;height:100dvh;overflow:hidden}
+#side{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--line);background:var(--panel)}
+header{padding:calc(env(safe-area-inset-top) + 14px) 16px 12px;border-bottom:1px solid var(--line)}
+h1{font-size:18px;margin:0 0 4px}
+header p{margin:0;font-size:12.5px;color:var(--ink2)}
+.legend{display:flex;gap:16px;margin-top:10px;font-size:13px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:14px;height:14px;border-radius:3px;display:inline-block}
+.tabs{display:flex;gap:6px;margin-top:12px}
+.tabs button{flex:1;font:inherit;font-size:14px;padding:6px 0;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;cursor:pointer}
+.tabs button.on{background:var(--wood);border-color:var(--wood);color:#fff;font-weight:600}
+#list{overflow:auto;flex:1;min-height:0;padding:4px 0 24px}
+.grp{font-size:12px;letter-spacing:.06em;color:var(--ink3);padding:14px 16px 4px}
+.row{display:grid;grid-template-columns:1fr auto;gap:0 10px;padding:8px 16px;cursor:pointer;border-left:3px solid transparent}
+.row:hover{background:var(--bg)}
+.row.on{background:var(--wood-bg);border-left-color:var(--wood)}
+.row .t{font-size:14.5px}
+.row .n{font-size:13px;color:var(--ink2);white-space:nowrap}
+.row .s{grid-column:1/3;font-size:12.5px;color:var(--ink3)}
+.foot{padding:10px 16px 14px;border-top:1px solid var(--line);font-size:12px;color:var(--ink3)}
+.foot label{display:flex;align-items:center;gap:6px;color:var(--ink2);font-size:13px;margin-bottom:6px}
+#stage{position:relative;min-width:0;min-height:0;background:var(--stage)}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+#hint{position:absolute;right:12px;bottom:10px;font-size:12px;color:var(--ink3);background:var(--panel);padding:4px 10px;border-radius:6px;opacity:.9}
+#tag{position:absolute;left:12px;top:12px;font-size:14px;background:var(--panel);border-left:4px solid var(--wood);padding:6px 12px;border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+#tag:empty{display:none}
+#load{position:absolute;inset:0;display:grid;place-items:center;color:var(--ink3)}
+@media (max-width:760px){
+  body{grid-template-columns:1fr;grid-template-rows:55dvh 1fr}
+  #stage{grid-row:1}
+  #side{grid-row:2;border-right:0;border-top:1px solid var(--line)}
+  header{padding-top:12px}
+}
+</style>
+</head>
+<body>
+<aside id="side">
+  <header>
+    <h1>台中西屯林宅　木構範圍</h1>
+    <p>紅色＝木構件；灰色＝RC、鋼構、牆、門窗等其他構件。一工、二工分開檢視。</p>
+    <div class="legend"><span><i class="sw" style="background:var(--wood)"></i>木構</span><span><i class="sw" style="background:var(--gray)"></i>非木構</span></div>
+    <div class="tabs" id="tabs"><button data-b="1">一工</button><button data-b="2">二工</button></div>
+  </header>
+  <div id="list"></div>
+  <div class="foot">
+    <label><input type="checkbox" id="ctxOn" checked> 顯示非木構（灰）</label>
+    樓板、陽台版、RC 梁為 RC；屋頂 A–B、C–D 檁條與車庫頂梁為鋼構，皆不屬木構。<br>依據：事務所結構圖（含 10/29 版）及 11/3 說明、建築模型（10/13）。
+  </div>
+</aside>
+<main id="stage"><div id="load">載入模型中…</div><div id="tag"></div><div id="hint">拖曳旋轉・滾輪縮放・右鍵平移・點左側清單定位</div></main>
+<script src="three.min.js"></script>
+<script src="OrbitControls.js"></script>
+<script>
+const DEF={
+  C2:{t:'C2 木柱',s:'16×8 cm',d:'GLT GL28h，結構構件',g:'結構木構'},
+  WD1:{t:'WD1 擱柵（3F 雨遮、屋頂簷）',s:'4×8 cm',d:'GLT GL28h，A 外、D 外',g:'結構木構'},
+  WD2:{t:'WD2 邊梁（3F 雨遮、屋頂簷）',s:'16×8 cm',d:'GLT GL28h，A 外、D 外',g:'結構木構'},
+  WD1_1F:{t:'WD1 擱柵（1F 雨遮）',s:'4×8 cm',d:'GLT GL28h',g:'結構木構'},
+  WD2_1F:{t:'WD2 邊梁（1F 雨遮）',s:'16×8 cm',d:'GLT GL28h',g:'結構木構'},
+  WD3:{t:'WD3 車庫棚架梁',s:'8×24 cm',d:'GLT GL28h（車庫頂其餘為鋼構）',g:'結構木構'},
+  AD:{t:'A、D 軸木梁',s:'8×15 cm',d:'收 WD1 擱柵',g:'結構木構'},
+  DECO15:{t:'裝飾木梁（樓板下）',s:'8×15 cm',d:'2F、3F 樓板下天花',g:'裝飾木梁（裝修用集成材）'},
+  DECO10:{t:'裝飾木梁（屋頂下）',s:'8×10 cm',d:'3F 天花',g:'裝飾木梁（裝修用集成材）'},
+  DECO_X:{t:'裝飾木梁（屋頂 B–C 異尺寸）',s:'15×10、25×10 cm',d:'3F 天花，各 1 支',g:'裝飾木梁（裝修用集成材）'}
+};
+const DECO15_2={d:'2F、3F 樓板下天花，及 2F、3F 陽台下'};
+const ORDER=['C2','WD1','WD2','WD1_1F','WD2_1F','WD3','AD','DECO15','DECO10','DECO_X'];
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const stage=document.getElementById('stage'),list=document.getElementById('list'),tag=document.getElementById('tag');
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));stage.appendChild(renderer.domElement);
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(40,1,10,500000);camera.up.set(0,0,1);
+const controls=new THREE.OrbitControls(camera,renderer.domElement);controls.enableDamping=true;
+scene.add(new THREE.HemisphereLight(0xffffff,0x8a8f8c,0.75));
+const sun=new THREE.DirectionalLight(0xffffff,0.55);sun.position.set(-1,-1.6,2.2);scene.add(sun);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let DATA=null,cur=null,ctxMesh=null,groupMeshes={},sel=null,fly=null;
+const matWood=()=>new THREE.MeshLambertMaterial({color:new THREE.Color(css('--wood'))});
+const matCtx=new THREE.MeshLambertMaterial({color:0xb4b9b6,transparent:true,opacity:.22,depthWrite:false,side:THREE.DoubleSide});
+function dec(b64,T){const s=atob(b64),u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return new T(u.buffer);}
+function geom(p){const a=dec(p.v,Int16Array),pos=new Float32Array(a.length);for(let i=0;i<a.length;i++)pos[i]=a[i]*5;
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setIndex(new THREE.BufferAttribute(dec(p.f,Uint32Array),1));g.computeVertexNormals();g.computeBoundingBox();return g;}
+function clear(){[ctxMesh,...Object.values(groupMeshes)].forEach(m=>{if(m){scene.remove(m);m.geometry.dispose();}});groupMeshes={};ctxMesh=null;}
+function load(b){
+  cur=b;clear();sel=null;tag.textContent='';
+  document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x.dataset.b===b));
+  const d=DATA[b];
+  ctxMesh=new THREE.Mesh(geom(d.ctx),matCtx);ctxMesh.renderOrder=2;ctxMesh.visible=document.getElementById('ctxOn').checked;scene.add(ctxMesh);
+  ORDER.forEach(k=>{if(d.groups[k]){const m=new THREE.Mesh(geom(d.groups[k]),matWood());m.renderOrder=1;scene.add(m);groupMeshes[k]=m;}});
+  list.innerHTML='';let lastG='';
+  const all=document.createElement('div');all.className='row on';all.innerHTML=`<span class="t">全部木構</span><span class="n"></span><span class="s">點下方項目可單獨定位</span>`;all.onclick=()=>pick(null);list.appendChild(all);
+  ORDER.forEach(k=>{if(!d.groups[k])return;const df=Object.assign({},DEF[k],(b==='2'&&k==='DECO15')?DECO15_2:{});
+    if(df.g!==lastG){lastG=df.g;const h=document.createElement('div');h.className='grp';h.textContent=df.g;list.appendChild(h);}
+    const r=document.createElement('div');r.className='row';r.dataset.k=k;r.tabIndex=0;
+    r.innerHTML=`<span class="t">${df.t}</span><span class="n">${df.s}｜${d.groups[k].n} 支</span><span class="s">${df.d}</span>`;
+    r.onclick=()=>pick(k);r.onkeydown=e=>{if(e.key==='Enter')pick(k);};list.appendChild(r);});
+  frame(boxAll(),true);
+}
+function boxAll(){const b=new THREE.Box3();Object.values(groupMeshes).forEach(m=>b.union(m.geometry.boundingBox));if(ctxMesh&&ctxMesh.visible)b.union(ctxMesh.geometry.boundingBox);return b;}
+function pick(k){sel=k;
+  list.querySelectorAll('.row').forEach(r=>r.classList.toggle('on',(r.dataset.k||null)===k));
+  const base=new THREE.Color(css('--wood')),dim=base.clone().lerp(new THREE.Color(0xffffff),.72);
+  Object.entries(groupMeshes).forEach(([kk,m])=>{m.material.color.copy(!k||kk===k?base:dim);});
+  if(!k){tag.textContent='';frame(boxAll());return;}
+  const df=DEF[k];tag.textContent=`${df.t}　${df.s}　${DATA[cur].groups[k].n} 支`;
+  frame(groupMeshes[k].geometry.boundingBox);
+}
+function frame(b,instant){if(b.isEmpty())return;const c=b.getCenter(new THREE.Vector3()),r=Math.max(b.getSize(new THREE.Vector3()).length()/2,1500);
+  const dist=r/Math.sin(THREE.MathUtils.degToRad(camera.fov/2))*0.95;
+  const dir=new THREE.Vector3(-0.9,-1.25,0.85).normalize();
+  const to={p:c.clone().add(dir.multiplyScalar(dist)),t:c};
+  if(instant||reduce){camera.position.copy(to.p);controls.target.copy(to.t);controls.update();fly=null;return;}
+  fly={p0:camera.position.clone(),t0:controls.target.clone(),p1:to.p,t1:to.t,s:performance.now()};}
+document.querySelectorAll('#tabs button').forEach(x=>x.onclick=()=>load(x.dataset.b));
+document.getElementById('ctxOn').onchange=e=>{if(ctxMesh)ctxMesh.visible=e.target.checked;};
+function resize(){const r=stage.getBoundingClientRect();renderer.setSize(r.width,r.height,false);camera.aspect=r.width/Math.max(r.height,1);camera.updateProjectionMatrix();}
+new ResizeObserver(resize).observe(stage);resize();
+function animate(t){requestAnimationFrame(animate);
+  if(fly){const u=Math.min((performance.now()-fly.s)/700,1),e=u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
+    camera.position.lerpVectors(fly.p0,fly.p1,e);controls.target.lerpVectors(fly.t0,fly.t1,e);if(u>=1)fly=null;}
+  controls.update();renderer.render(scene,camera);}
+animate();
+fetch('model.json').then(r=>r.json()).then(d=>{DATA=d;document.getElementById('load').remove();load('1');})
+  .catch(()=>{document.getElementById('load').textContent='模型載入失敗，請重新整理';});
+</script>
+</body>
+</html>
