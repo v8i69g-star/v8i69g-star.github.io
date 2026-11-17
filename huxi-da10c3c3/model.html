@@ -1,46 +1,6 @@
 <!doctype html>
-<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><title>湖西圖書館結構模型</title>
-<style>:root{--bg:#f6f4f0;--panel:#fffdf9;--ink:#24211d;--mute:#6f685f;--line:#e2ddd4;--accent:#9a5b2e;--warn:#b42318}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171513;--panel:#201d1a;--ink:#ede8e1;--mute:#a59d92;--line:#36312b;--accent:#e0a06a;--warn:#ff8a7a}}
-:root[data-theme="dark"]{--bg:#171513;--panel:#201d1a;--ink:#ede8e1;--mute:#a59d92;--line:#36312b;--accent:#e0a06a;--warn:#ff8a7a}
-body{margin:0;min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;padding:16px;box-sizing:border-box}
-form{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:24px;width:100%;max-width:340px;box-sizing:border-box}
-h1{font-size:18px;margin:0 0 6px}p{font-size:13px;color:var(--mute);margin:0 0 14px}
-input{width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
-button{margin-top:10px;width:100%;font:inherit;font-size:15px;padding:9px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
-button:disabled{opacity:.5;cursor:default}
-#err{color:var(--warn);font-size:13px;min-height:18px;margin-top:8px;line-height:1.5}</style></head>
-<body><form id="f"><h1>湖西圖書館｜現場資訊</h1><p>請輸入密碼。</p><input id="pw" type="password" autocomplete="current-password" autofocus><button id="go">進入</button><div id="err" role="alert"></div></form>
-<script>
-(()=>{ // 包在函式內：解密後 document.write 的頁面與本頁共用全域，避免變數名稱衝突
-const SALT='OTfnVhtf5+C6riaq71p2Qw==',ITER=600000,BLOB='LBxi6/T7t3eLM0kPAitE4IMolx9RxmC2hx/0lJpivFfDZsJnJABfF1JdK0L9O5th21uth9/ltrS/676JkTMJS8xx225F6IVySkM3NMrTBs+q4ez3RV3AtCyTPv34Qds544P+0rIk1dExiNymQSLj42xixgJMhwR3GTKMEhU6rf08E+2WWgBGc2JLu/yTHcFeW7w+SmgR5u574qOKKJ6RWaBGt5ObjDFwxroh93XE6XAO7t0JLi9kgEJewhxRwEAzbE0hUNrQ/7dRUougUqT5CwXwrgGu5SOwJuXZBoDCI0vMP5ie1hcG2QU8k/IqBbD+c5wikdhLcPafZUmmS6YvuYWjub/dpmlxsR661Mxtrn3KcXcokTkquS6aAix85U9nizGFwM3JoWzJysOuybjK/nkk9/pON+BuM+lF2nqMRs9Y+pMlkxjCk8ZeXKrfkqslQYQ3WalTptNDbeDxgCunl6l/tJt8Cgka2H1zCAfIkuGE2lxQUovmxpsSzQMOMQxHt6CPpMpvYeZkafkEpF2yqszRKggTyriWLwY3vRqAww2puHGWz8bowPBYGseSqXJ1By0ZqtJjO7huKDdLq2hrG0YQk9WuOQ9Da5kMOzTuoeLbImX4HZYQGRELLthSdXHqHds6JXIH4mscZrj3wvYk3tc2zjVL80VQk58xMGjdoLjmUz3BIGNQcYiUnRYvxhYhlc/zpD80nPDWThcbETR3BnwRcA==';
-const SK='huxi_k_'+SALT;
-const loaded=new Promise(r=>{if(document.readyState==='complete')r();else addEventListener('load',()=>setTimeout(r,0),{once:true})});
-const $=id=>document.getElementById(id);
-const say=t=>{$('err').textContent=t};
-const u8=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
-const b64=b=>btoa(String.fromCharCode(...new Uint8Array(b)));
-function ss(fn){try{return fn(sessionStorage)}catch(e){return null}}
-async function derive(pw){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);
- return crypto.subtle.deriveKey({name:'PBKDF2',salt:u8(SALT),iterations:ITER,hash:'SHA-256'},k,{name:'AES-GCM',length:256},true,['decrypt'])}
-async function dec(key,buf){buf=new Uint8Array(buf);return crypto.subtle.decrypt({name:'AES-GCM',iv:buf.subarray(0,12)},key,buf.subarray(12))}
-async function show(key,silent){
- let html;
- try{html=new TextDecoder().decode(await dec(key,u8(BLOB)))}
- catch(e){ss(s=>s.removeItem(SK));if(!silent)say(e&&e.name==='OperationError'?'密碼不正確':'解密失敗：'+(e&&e.name||e));$('go').disabled=false;return false}
- try{const raw=await crypto.subtle.exportKey('raw',key);ss(s=>s.setItem(SK,b64(raw)))}catch(e){}
- window.__huxiKey=key;window.__huxiDec=dec;
- await loaded; // 頁面還在解析時 document.open 會被忽略、內容變成附加，所以等 load 之後再換頁
- document.open();document.write(html);document.close();return true;
-}
-if(!(window.crypto&&crypto.subtle)){
- say('此瀏覽器無法解密：請用 https 網址開啟，並使用新版 Chrome／Edge／Safari／Firefox。');
- $('go').disabled=true;$('pw').disabled=true;
-}else{
- $('f').onsubmit=async e=>{e.preventDefault();$('go').disabled=true;say('解密中…');
-  try{await show(await derive($('pw').value))}catch(err){say('解密失敗：'+(err&&err.name||err));$('go').disabled=false}};
- const saved=ss(s=>s.getItem(SK));
- if(saved){say('解密中…');crypto.subtle.importKey('raw',u8(saved),'AES-GCM',true,['decrypt']).then(k=>show(k,true)).then(ok=>{if(!ok)say('')}).catch(()=>{ss(s=>s.removeItem(SK));say('')})}
-}
-})();
-</script></body></html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><title>湖西圖書館結構模型</title></head>
+<body style="font-family:system-ui,sans-serif;padding:24px">
+<p>3D 模型已移到首頁，正在前往…　若沒有自動跳轉，請點 <a href="./">首頁</a>。</p>
+<script>location.replace('./'+(location.hash||''))</script>
+</body></html>
