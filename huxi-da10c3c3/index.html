@@ -36,6 +36,10 @@ th{font-size:12px;color:var(--mute);font-weight:500;border-top:0}
 .b{display:inline-block;font-size:11.5px;border-radius:9px;padding:0 8px;white-space:nowrap}
 .ok{background:var(--okbg);color:var(--ok)}.wait{background:var(--todobg);color:var(--todo)}.bad{background:var(--warnbg);color:var(--warn)}
 .muted{color:var(--mute);font-size:12.5px}
+.slbl{position:absolute;transform:translate(-50%,-170%);font-size:12px;font-weight:700;color:#fff;background:#1f5f99;border-radius:4px;padding:1px 6px;white-space:nowrap;pointer-events:auto;cursor:pointer}
+.slbl.st{background:#0b7a3b}
+.tso tbody tr{cursor:pointer}.tso tbody tr.on{background:var(--sel)}
+#bso.on{background:#1f5f99;color:#fff;border-color:#1f5f99}
 .tbd{color:var(--todo);font-size:12.5px}
 td.tel a{white-space:nowrap}
 .log td:first-child{white-space:nowrap;font-variant-numeric:tabular-nums}
@@ -111,6 +115,7 @@ select{font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--line);
 </header>
 <nav class="tabs" role="tablist">
   <button role="tab" data-tab="info" aria-selected="true">現場資訊</button>
+  <button role="tab" data-tab="setout" aria-selected="false">放樣</button>
   <button role="tab" data-tab="parts" aria-selected="false">構件</button>
   <button role="tab" data-tab="issues" aria-selected="false">審查意見</button>
   <button role="tab" data-tab="load" aria-selected="false">裝載計畫</button>
@@ -206,6 +211,7 @@ select{font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--line);
   <h2>更新紀錄</h2>
   <table class="log">
     <tr><th>日期</th><th>內容</th></tr>
+    <tr><td>2026-11-17</td><td>新增「放樣」分頁與 3D 上方「放樣模式」按鈕：上部建物全部隱藏，只留基礎放樣物件與鋼構柱腳放樣板 15 座中心點、樓梯錨栓，由上往下看，點表格可定位。</td></tr>
     <tr><td>2026-11-17</td><td>網站取消密碼，打開即可瀏覽與下載。</td></tr>
     <tr><td>2026-11-17</td><td>新增「鋼構預埋件」：柱腳放樣板 15 座、樓梯錨栓 8 支，列出 11 處鋼構錨栓與木構錨栓中心距小於 60 mm 的位置；待確認事項增加樓梯錨栓缺組、柱腳件號、放樣板固定方式、柱腳與木構鐵件重疊、鋼構放樣點 5 項；圖說新增「鋼構預埋核對平面圖 1151117」，PDF、放樣板中心點 DWG 與 CSV 可在本頁下載。</td></tr>
     <tr><td>2026-11-12</td><td>新增「11月13號進場鋼構」：方管 38 支與鋼梯梯段 8 段，共 46 件（欄杆扶手不列入；依鋼構廠構件清單比對模型辨識，實際進場以出貨單為準），可在 3D 上標紅並以表格查看。</td></tr>
@@ -239,6 +245,7 @@ select{font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--line);
   <div class="note">審查意見依「2026-04-15 澎湖圖書館_結構審查意見_BGE_中文翻譯.docx」整理；原文為 BG&amp;E 英文意見書。牆、樓版的對應只到構件類別，未指到單一板片。</div>
 </div>
 <div class="pane" id="pane-s1113" role="tabpanel" hidden></div>
+<div class="pane" id="pane-setout" role="tabpanel" hidden></div>
 <div class="pane" id="pane-load" role="tabpanel" hidden>
   <p class="sub">原廠裝載資料（貨櫃、包裝、安裝順序）整理中，尚未併入本頁。</p>
 </div>
@@ -246,7 +253,7 @@ select{font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--line);
 <main>
   <canvas id="c"></canvas>
   <div id="load"><span id="loadt">模型載入中…</span><div id="bar"><i></i></div></div>
-  <div class="top"><button id="reset">全部顯示</button><button id="xray">半透明</button><button id="b1113" class="tag1113" aria-pressed="false">11月13號進場鋼構</button></div>
+  <div class="top"><button id="reset">全部顯示</button><button id="xray">半透明</button><button id="b1113" class="tag1113" aria-pressed="false">11月13號進場鋼構</button><button id="bso" aria-pressed="false">放樣模式</button></div>
   <div id="labels"></div>
   <div id="card" hidden></div>
   <div class="hint" id="hint">拖曳旋轉・滾輪縮放・右鍵平移・點木構件或鐵件看資料</div>
@@ -443,6 +450,7 @@ function build3d(groups){
   const l=$('load');if(l)l.remove();
   setupPicking(); recolor(); refilter();
   resize(); frame(all.min,all.max,true); apply();
+  if(window.__soReady&&soOn){soBuild();soLbl.forEach(e=>e.hidden=false);soAll()}
 }
 
 function frame(bmin,bmax,instant){
@@ -527,17 +535,17 @@ function syncEyes(){document.querySelectorAll('.eye').forEach(e=>{const g=G[e.da
       el.onclick=()=>{curIssue=no;document.querySelectorAll('.iss').forEach(x=>x.classList.remove('on'));el.classList.add('on');focus(keys)};
       il.appendChild(el)})}
   renderIssues();
-  $('reset').onclick=()=>{if(b1113)toggle1113(false);curIssue=null;sel.clear();for(const k in G)G[k].vis=true;syncEyes();document.querySelectorAll('.iss').forEach(x=>x.classList.remove('on'));apply();if(ready3d)frame(all.min,all.max)};
+  $('reset').onclick=()=>{if(soOn)showTab('info');if(b1113)toggle1113(false);curIssue=null;sel.clear();for(const k in G)G[k].vis=true;syncEyes();document.querySelectorAll('.iss').forEach(x=>x.classList.remove('on'));apply();if(ready3d)frame(all.min,all.max)};
   $('xray').onclick=e=>{xray=!xray;e.target.textContent=xray?'實體':'半透明';apply()};
   syncEyes();
 })();
 
 
 // ==== 分頁 ====
-function showTab(t){document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t?'true':'false'));
+function showTab(t){if(window.__soReady)setSetout(t==='setout');document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t?'true':'false'));
   document.querySelectorAll('.pane').forEach(p=>p.hidden=p.id!=='pane-'+t)}
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{showTab(b.dataset.tab);try{history.replaceState(null,'','#'+b.dataset.tab)}catch(e){}});
-{const h=(location.hash||'').slice(1);if(['info','parts','issues','load','s1113'].includes(h))showTab(h)}
+{const h=(location.hash||'').slice(1);if(['info','setout','parts','issues','load','s1113'].includes(h))showTab(h)}
 
 // ==== 逐件木構（點選、上色、篩選）====
 const LPI={}, LPN={};
@@ -705,6 +713,69 @@ function select1113(r,fly,fromModel){clear1113Sel();s1113Cur=r;const tr=document
   try{build3d(await fetchModel())}
   catch(e){loadMsg('模型載入失敗：'+e.message+'。各分頁仍可使用。',true)}
 })();
+// ==== 放樣模式：只留基礎放樣物件＋鋼構柱腳放樣板中心點 ====
+const SETOUT={"plates":[{"id":"P01","t":"4PD1","x":13235.9,"y":30093.1,"d":48.0,"c":[-394.83,1234.15],"r":[[-393.23,1203.79],[-364.46,1235.75],[-396.42,1264.52],[-425.19,1232.56]],"b":[[-410.62,1224.83],[-402.44,1217.46],[-393.53,1209.44],[-385.5,1218.35],[-378.14,1226.54],[-370.11,1235.44],[-379.02,1243.48],[-387.2,1250.84],[-396.12,1258.87],[-404.15,1249.95],[-411.51,1241.77],[-419.54,1232.85]]},{"id":"P02","t":"4PD1","x":707.2,"y":28307.0,"d":60.0,"c":[-1647.7,1055.54],"r":[[-1639.83,1026.17],[-1618.32,1063.42],[-1655.57,1084.92],[-1677.08,1047.67]],"b":[[-1661.21,1043.13],[-1651.69,1037.63],[-1641.29,1031.63],[-1635.29,1042.04],[-1629.79,1051.56],[-1623.79,1061.94],[-1634.19,1067.95],[-1643.71,1073.45],[-1654.11,1079.45],[-1660.11,1069.06],[-1665.61,1059.54],[-1671.61,1049.13]]},{"id":"P03","t":"4PD1","x":329.7,"y":27653.2,"d":60.0,"c":[-1685.45,990.17],"r":[[-1677.58,960.79],[-1656.07,998.03],[-1693.32,1019.53],[-1714.82,982.29]],"b":[[-1698.96,977.75],[-1689.44,972.25],[-1679.04,966.25],[-1673.04,976.65],[-1667.54,986.17],[-1661.54,996.57],[-1671.94,1002.57],[-1681.46,1008.07],[-1691.86,1014.07],[-1697.86,1003.67],[-1703.36,994.15],[-1709.36,983.75]]},{"id":"P04","t":"4PD2","x":17498.9,"y":27529.1,"d":60.2,"c":[31.47,977.75],"r":[[36.09,944.56],[62.44,990.57],[26.84,1010.95],[0.49,964.94]],"b":[[25.04,955.5],[15.5,960.98],[5.96,966.44],[13.42,979.45],[20.88,992.46],[28.34,1005.49],[37.89,1000.02],[47.43,994.54],[56.97,989.07],[49.51,976.06],[42.05,963.04],[34.59,950.02]]},{"id":"P05","t":"4PD1","x":7277.5,"y":23474.3,"d":48.0,"c":[-990.67,572.27],"r":[[-989.08,541.91],[-960.3,573.87],[-992.26,602.65],[-1021.04,570.69]],"b":[[-1006.47,562.95],[-998.29,555.6],[-989.37,547.57],[-981.34,556.49],[-973.98,564.67],[-965.95,573.58],[-974.87,581.6],[-983.05,588.96],[-991.96,597.0],[-999.99,588.09],[-1007.35,579.9],[-1015.38,570.99]]},{"id":"P06","t":"4PD1","x":6698.9,"y":22831.8,"d":48.0,"c":[-1048.53,508.02],"r":[[-1046.94,477.66],[-1018.17,509.62],[-1050.12,538.39],[-1078.9,506.43]],"b":[[-1064.33,498.69],[-1056.15,491.34],[-1047.24,483.31],[-1039.21,492.23],[-1031.85,500.4],[-1023.82,509.32],[-1032.73,517.35],[-1040.91,524.7],[-1049.83,532.74],[-1057.85,523.82],[-1065.22,515.65],[-1073.25,506.73]]},{"id":"P07","t":"4PD1","x":19780.6,"y":18149.0,"d":6.8,"c":[259.64,39.75],"r":[[283.55,20.93],[278.46,63.66],[235.73,58.56],[240.83,15.83]],"b":[[241.61,43.14],[242.91,32.22],[244.32,20.3],[256.24,21.72],[267.16,23.02],[279.08,24.42],[277.67,36.35],[276.37,47.27],[274.96,59.19],[263.04,57.77],[252.12,56.47],[240.2,55.07]]},{"id":"P08","t":"4PD1","x":19740.5,"y":17317.5,"d":4.6,"c":[255.63,-43.4],"r":[[235.92,-66.57],[278.78,-63.12],[275.33,-20.25],[232.47,-23.7]],"b":[[237.74,-39.33],[238.62,-50.3],[239.58,-62.25],[251.54,-61.3],[262.51,-60.41],[274.47,-59.45],[273.51,-47.48],[272.63,-36.53],[271.66,-24.56],[259.7,-25.53],[248.74,-26.4],[236.78,-27.36]]},{"id":"P09","t":"4PD1","x":18883.6,"y":17248.6,"d":4.6,"c":[169.94,-50.3],"r":[[150.23,-73.46],[193.1,-70.01],[189.65,-27.14],[146.78,-30.59]],"b":[[152.05,-46.21],[152.93,-57.18],[153.9,-69.15],[165.86,-68.18],[176.82,-67.3],[188.78,-66.33],[187.82,-54.38],[186.94,-43.41],[185.98,-31.45],[174.02,-32.41],[163.05,-33.3],[151.09,-34.25]]},{"id":"P10","t":"4PD1","x":11039.9,"y":16618.0,"d":4.6,"c":[-614.43,-113.36],"r":[[-634.14,-136.51],[-591.27,-133.06],[-594.72,-90.19],[-637.59,-93.64]],"b":[[-632.31,-109.28],[-631.43,-120.23],[-630.47,-132.2],[-618.51,-131.23],[-607.54,-130.36],[-595.58,-129.4],[-596.54,-117.43],[-597.43,-106.46],[-598.39,-94.5],[-610.35,-95.46],[-621.31,-96.35],[-633.28,-97.31]]},{"id":"P11","t":"4PD1","x":10185.3,"y":16549.3,"d":4.6,"c":[-699.89,-120.23],"r":[[-676.72,-139.93],[-680.17,-97.06],[-723.04,-100.51],[-719.59,-143.38]],"b":[[-717.77,-116.15],[-716.89,-127.11],[-715.93,-139.07],[-703.96,-138.11],[-693.0,-137.23],[-681.04,-136.26],[-682.0,-124.31],[-682.88,-113.33],[-683.84,-101.38],[-695.8,-102.33],[-706.77,-103.21],[-718.73,-104.18]]},{"id":"P12","t":"4PD1","x":19174.4,"y":8929.4,"d":3.0,"c":[199.02,-882.22],"r":[[178.67,-904.81],[221.62,-902.56],[219.37,-859.62],[176.42,-861.87]],"b":[[181.25,-877.63],[181.83,-888.62],[182.46,-900.61],[194.44,-899.98],[205.43,-899.4],[217.41,-898.78],[216.78,-886.79],[216.21,-875.8],[215.58,-863.83],[203.59,-864.45],[192.61,-865.03],[180.63,-865.65]]},{"id":"P13","t":"4PD1","x":18281.4,"y":8882.6,"d":3.0,"c":[109.72,-886.89],"r":[[89.37,-909.49],[132.32,-907.24],[130.07,-864.3],[87.12,-866.55]],"b":[[91.96,-882.32],[92.53,-893.3],[93.16,-905.28],[105.14,-904.65],[116.13,-904.08],[128.11,-903.45],[127.48,-891.48],[126.91,-880.48],[126.28,-868.5],[114.3,-869.13],[103.31,-869.7],[91.33,-870.33]]},{"id":"P14","t":"4PD1","x":10461.3,"y":8472.8,"d":3.0,"c":[-672.29,-927.88],"r":[[-692.64,-950.48],[-649.69,-948.23],[-651.94,-905.28],[-694.89,-907.53]],"b":[[-690.05,-923.3],[-689.48,-934.28],[-688.85,-946.26],[-676.86,-945.64],[-665.88,-945.07],[-653.9,-944.43],[-654.52,-932.45],[-655.1,-921.47],[-655.73,-909.48],[-667.71,-910.12],[-678.7,-910.68],[-690.68,-911.32]]},{"id":"P15","t":"4PD1","x":9574.0,"y":8426.3,"d":3.0,"c":[-761.02,-932.53],"r":[[-781.36,-955.13],[-738.41,-952.88],[-740.67,-909.93],[-783.61,-912.18]],"b":[[-778.78,-927.95],[-778.2,-938.93],[-777.58,-950.91],[-765.59,-950.29],[-754.61,-949.72],[-742.62,-949.08],[-743.25,-937.11],[-743.83,-926.12],[-744.46,-914.13],[-756.44,-914.76],[-767.42,-915.33],[-779.41,-915.97]]}],"stairs":[{"id":"S1","t":"M25 1F","l":"L400","x":14378.0,"y":21242.2,"c":[-280.62,349.07],"z":-33.9},{"id":"S2","t":"M25 1F","l":"L400","x":14638.3,"y":21093.0,"c":[-254.59,334.15],"z":-33.9},{"id":"S3","t":"M25 1F","l":"L400","x":14898.5,"y":20943.7,"c":[-228.57,319.21],"z":-33.9},{"id":"S4","t":"M25 1F","l":"L400","x":15158.8,"y":20794.5,"c":[-202.54,304.29],"z":-33.9},{"id":"S5","t":"M25 2F","l":"L350","x":14517.3,"y":21485.1,"c":[-266.69,373.35],"z":371.1},{"id":"S6","t":"M25 2F","l":"L350","x":14777.5,"y":21335.9,"c":[-240.67,358.44],"z":371.1},{"id":"S7","t":"M25 2F","l":"L350","x":15037.8,"y":21186.6,"c":[-214.64,343.5],"z":371.1},{"id":"S8","t":"M25 2F","l":"L350","x":15298.0,"y":21037.4,"c":[-188.62,328.59],"z":371.1}]};
+const SO_KEEP=['CLT 基礎鐵件','基準板','化學毛栓','預埋彎鉤'];
+let soOn=false, soObj=null, soSaved=null; const soLbl=[];
+function soBuild(){if(soObj||!ready3d)return;soObj=new THREE.Group();
+  const Z=397.4, lineM=new THREE.LineBasicMaterial({color:'#1f5f99'}), crossM=new THREE.LineBasicMaterial({color:'#d0281c'});
+  const dotG=new THREE.CylinderGeometry(1.05,1.05,1.5,12);dotG.rotateX(Math.PI/2);
+  const boltM=new THREE.MeshBasicMaterial({color:'#1f5f99'}), stairM=new THREE.MeshBasicMaterial({color:'#0b7a3b'});
+  const plateM=new THREE.MeshBasicMaterial({color:'#9cc3e6',transparent:true,opacity:.45,side:THREE.DoubleSide,depthWrite:false});
+  SETOUT.plates.forEach(p=>{
+    const v=p.r.map(q=>new THREE.Vector3(q[0],q[1],Z));
+    soObj.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(v),lineM));
+    const sh=new THREE.Shape(p.r.map(q=>new THREE.Vector2(q[0],q[1])));const pm=new THREE.Mesh(new THREE.ShapeGeometry(sh),plateM);pm.position.z=Z-0.2;soObj.add(pm);
+    p.b.forEach(q=>{const m=new THREE.Mesh(dotG,boltM);m.position.set(q[0],q[1],Z+.8);soObj.add(m)});
+    const cx=p.c[0],cy=p.c[1],L=14;
+    soObj.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(cx-L,cy,Z+.5),new THREE.Vector3(cx+L,cy,Z+.5),new THREE.Vector3(cx,cy-L,Z+.5),new THREE.Vector3(cx,cy+L,Z+.5)]),crossM));
+  });
+  SETOUT.stairs.forEach(s=>{const m=new THREE.Mesh(dotG,stairM);m.scale.set(1.3,1.3,1);m.position.set(s.c[0],s.c[1],s.z+36);soObj.add(m)});
+  scene.add(soObj);
+  SETOUT.plates.forEach(p=>{const el=document.createElement('div');el.className='slbl';el.textContent=p.id;el._p=new THREE.Vector3(p.c[0],p.c[1],Z+2);el.onclick=()=>soGo(p);labels.appendChild(el);soLbl.push(el)});
+  const s2=SETOUT.stairs.filter(s=>s.z>0),s1=SETOUT.stairs.filter(s=>s.z<0);
+  [[s2.length?s2:s1,'樓梯錨栓']].forEach(function(pair){const a=pair[0];if(!a.length)return;const el=document.createElement('div');el.className='slbl st';el.textContent=pair[1];
+    el._p=new THREE.Vector3(a.reduce((x,s)=>x+s.c[0],0)/a.length,a.reduce((x,s)=>x+s.c[1],0)/a.length,a[0].z+45);labels.appendChild(el);soLbl.push(el)});
+}
+function soTop(cx,cy,r,instant){if(!ready3d)return;const c=new THREE.Vector3(cx,cy,400);const d=r/Math.tan(cam.fov*Math.PI/360)*1.1;
+  const to=new THREE.Vector3(cx,cy-d*0.02,400+d);
+  if(reduce||instant){cam.position.copy(to);ctl.target.copy(c);requestRender();return}
+  fly={p0:cam.position.clone(),t0:ctl.target.clone(),p1:to,t1:c,s:performance.now()};requestRender()}
+function soAll(){const xs=[],ys=[];SETOUT.plates.forEach(p=>{xs.push(p.c[0]);ys.push(p.c[1])});
+  SO_KEEP.forEach(k=>{const g=G[k];if(g){xs.push(g.bmin[0],g.bmax[0]);ys.push(g.bmin[1],g.bmax[1])}});
+  const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
+  const asp=Math.max(main.clientWidth/Math.max(main.clientHeight,1),.4);
+  soTop((x0+x1)/2,(y0+y1)/2,Math.max((y1-y0)/2,(x1-x0)/2/asp)+40)}
+function soMark(id){document.querySelectorAll('.tso tbody tr').forEach(tr=>tr.classList.toggle('on',tr.dataset.id===id))}
+function soGo(p){soMark(p.id);soTop(p.c[0],p.c[1],120)}
+function setSetout(on){if(on===soOn)return;soOn=on;
+  if(on){soSaved={};for(const k in G){soSaved[k]=G[k].vis;G[k].vis=SO_KEEP.includes(k)}
+    if(b1113)toggle1113(false);sel.clear();curIssue=null;if(typeof clearPick==='function')clearPick();
+    soBuild();if(soObj)soObj.visible=true;soLbl.forEach(e=>e.hidden=false);syncEyes();apply();soAll()}
+  else{if(soSaved)for(const k in G)G[k].vis=soSaved[k]!==undefined?soSaved[k]:true;soSaved=null;
+    if(soObj)soObj.visible=false;soLbl.forEach(e=>e.hidden=true);syncEyes();apply();if(ready3d&&all)frame(all.min,all.max)}
+  const b=$('bso');if(b){b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false')}}
+(function paneSetout(){
+  const pane=$('pane-setout');if(!pane)return;
+  const f=n=>n.toLocaleString('en-US',{maximumFractionDigits:0});
+  let rows='';
+  SETOUT.plates.forEach(p=>{rows+='<tr data-id="'+p.id+'"><td><b>'+p.id+'</b></td><td class="nw">'+p.t+'</td><td class="nw">'+f(p.x)+'</td><td class="nw">'+f(p.y)+'</td></tr>'});
+  SETOUT.stairs.forEach(s=>{rows+='<tr data-id="'+s.id+'"><td><b>'+s.id+'</b></td><td class="nw">樓梯 '+s.t.replace('M25 ','')+'</td><td class="nw">'+f(s.x)+'</td><td class="nw">'+f(s.y)+'</td></tr>'});
+  pane.innerHTML='<p class="sub" style="font-size:13.5px;color:var(--ink)"><b>放樣模式</b>：3D 只顯示 CLT 基礎鐵件、基準板、化學毛栓、預埋彎鉤，以及鋼構柱腳放樣板 15 座（藍框＋錨栓，紅十字為中心點）與樓梯錨栓（綠）。木構、鋼構、RC 等上部建物全部隱藏，由上往下看。</p>'+
+  '<p class="warnnote">座標為模型座標（mm），與放樣圖 R05、「鋼構放樣板中心點」DWG／CSV 同一座標系，尚未轉換現場 E/N。鋼構位置取自鋼構廠模型（5/20 版）；1F 另一組樓梯錨栓模型沒有，未顯示。</p>'+
+  '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px"><button class="btn" id="soall">看全區</button><button class="btn" id="sooff">結束放樣模式</button></div>'+
+  '<div class="muted" style="margin-bottom:6px">點表格一列，3D 會飛到該座並由上往下看。</div>'+
+  '<div class="tblwrap"><table class="tso"><thead><tr><th>編號</th><th>類型</th><th>X</th><th>Y</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+  '<p class="muted">柱腳編號 P01～P15 為暫編，對照「鋼構預埋核對平面圖 1151117」；下載在「現場資訊」分頁的「鋼構預埋件」區塊。</p>';
+  pane.querySelectorAll('.tso tbody tr').forEach(tr=>tr.onclick=()=>{const id=tr.dataset.id;const p=SETOUT.plates.find(x=>x.id===id);
+    if(p)return soGo(p);const s=SETOUT.stairs.find(x=>x.id===id);if(s){soMark(id);soTop(s.c[0],s.c[1],80)}});
+  $('soall').onclick=()=>{setSetout(true);soAll()};
+  $('sooff').onclick=()=>showTab('info');
+  const b=$('bso');if(b)b.onclick=()=>{if(soOn)showTab('info');else showTab('setout')};
+  window.__soReady=true;
+  if((location.hash||'')==='#setout')setSetout(true);
+})();
+
 </script>
 </body>
 </html>
