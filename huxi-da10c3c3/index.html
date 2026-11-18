@@ -74,6 +74,20 @@ footer{margin-top:16px;font-size:12px;color:var(--mute)}
 .filters button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .note{font-size:11.5px;color:var(--mute);line-height:1.55;margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
 
+
+/* ==== 兩點量距（2026-11-18）==== */
+#mlay{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+#msnap{position:absolute;right:66px;top:114px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:13px;z-index:3;box-shadow:0 4px 16px rgba(0,0,0,.12)}
+#msnap label{display:flex;align-items:center;gap:6px;padding:2px 0;cursor:pointer;white-space:nowrap}
+#msnap .t{font-size:12px;color:var(--mute);margin-bottom:2px}
+#mres{position:absolute;left:50%;top:52px;transform:translateX(-50%);background:var(--panel);border:1px solid #e4572e;border-radius:10px;padding:6px 12px;font-size:13px;z-index:3;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.12)}
+#mres b{font-size:16px;color:#e4572e}
+#mres button{font:inherit;font-size:12px;margin-left:8px;border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:2px 8px;cursor:pointer}
+.mmark{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border:2px solid #e4572e;pointer-events:none;z-index:2;box-sizing:border-box}
+.mmark.end{border-radius:0}.mmark.mid{border-radius:0;transform:rotate(45deg)}.mmark.near{border-radius:50%}.mmark.perp{border-width:0 0 2px 2px}
+.mmark.fix{background:#e4572e}
+.mtag{position:absolute;font-size:11px;color:#fff;background:#e4572e;border-radius:4px;padding:0 4px;pointer-events:none;z-index:2;transform:translate(10px,-22px);white-space:nowrap}
+@media (max-width:760px){#msnap{right:52px;top:92px}#mres{top:44px;font-size:12px}}
 /* ==== 視角方塊與導覽列（2026-11-18）==== */
 #vc{position:absolute;right:10px;top:10px;width:96px;height:96px;user-select:none;-webkit-user-select:none;z-index:2}
 #vc .ring{position:absolute;inset:6px;border-radius:50%;border:9px solid rgba(120,128,138,.45);transform-origin:50% 50%}
@@ -241,7 +255,7 @@ select{font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--line);
   <h2>更新紀錄</h2>
   <table class="log">
     <tr><th>日期</th><th>內容</th></tr>
-    <tr><td>2026-11-18</td><td>3D 點選物件後，旋轉中心自動移到該物件；右上新增視角方塊（上／北／東／南／西，方位環隨視角轉動）與導覽列（環轉、平移、放大、縮小、全部、等角、仰視）。另補建 2F RC 樓版（示意，頂 400 cm、厚 15 cm 待確認）。</td></tr>
+    <tr><td>2026-11-18</td><td>3D 點選物件後，旋轉中心自動移到該物件；右上新增視角方塊（上／北／東／南／西，方位環隨視角轉動）與導覽列（環轉、平移、放大、縮小、全部、等角、仰視）；新增兩點量距（距離與 ΔX／ΔY／ΔZ，mm），可吸附端點、中點、垂足、最近點。另補建 2F RC 樓版（示意，頂 400 cm、厚 15 cm 待確認）。</td></tr>
     <tr><td>2026-11-18</td><td>3D 新增「圖層」面板：所有類別可個別或分區（木構、鋼構、五金與鋼板、參考）開關；所有物件都可點選，資料卡可「隱藏此物件」或隱藏整個類別，「全部顯示」或圖層面板可全部取消隱藏。鋼構、五金等沒有逐件資料的類別，依網格相連自動分件。</td></tr>
     <tr><td>2026-11-18</td><td>「鋼構預埋件」新增放樣板中心距與方向：相鄰中心斜距 16 組與 X／Y 分量、P14／P15 到 A 梯上緣距離、4 條共線線組與 P04／P07 最近兩角定位；可下載中心距 DWG／PDF／CSV、方向圖解 R2、P14P15 到 A 梯放大圖。</td></tr>
     <tr><td>2026-11-17</td><td>新增「放樣」分頁與 3D 上方「放樣模式」按鈕：上部建物全部隱藏，只留基礎放樣物件與鋼構柱腳放樣板 15 座中心點、樓梯錨栓，由上往下看，點表格可定位。</td></tr>
@@ -291,8 +305,10 @@ select{font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--line);
   <div id="labels"></div>
   <div id="card" hidden></div>
   <div id="vc" title="視角方塊：點「上」看平面、點方位字看該側立面（北＝模型 +Y，待確認）"><div class="ring" id="vcring"><b data-v="N" style="left:50%;top:0">北</b><b data-v="E" style="left:100%;top:50%">東</b><b data-v="S" style="left:50%;top:100%">南</b><b data-v="W" style="left:0;top:50%">西</b></div><div class="face" id="vcface" data-v="T">上</div></div>
-  <div id="nav" aria-label="導覽列"><button id="nvorbit" class="on" title="環轉（左鍵拖曳旋轉）">⟳</button><button id="nvpan" title="平移（左鍵拖曳平移）">✋</button><hr><button id="nvin" title="放大">＋</button><button id="nvout" title="縮小">－</button><button id="nvfit" title="縮放到全部">⤢</button><hr><button id="nviso" title="等角視圖">◩</button><button id="nvbot" title="仰視（從下往上看）">下</button></div>
-  <div class="hint" id="hint">拖曳旋轉・滾輪縮放・右鍵平移・點物件看資料並設為旋轉中心・右上視角方塊切換視圖</div>
+  <div id="msnap" hidden><div class="t">吸附</div><label><input type="checkbox" data-s="end" checked>端點</label><label><input type="checkbox" data-s="mid" checked>中點</label><label><input type="checkbox" data-s="perp" checked>垂足（對第一點）</label><label><input type="checkbox" data-s="near" checked>最近點（表面）</label></div>
+  <div id="mres" hidden></div><div id="mlay"></div>
+  <div id="nav" aria-label="導覽列"><button id="nvorbit" class="on" title="環轉（左鍵拖曳旋轉）">⟳</button><button id="nvpan" title="平移（左鍵拖曳平移）">✋</button><hr><button id="nvin" title="放大">＋</button><button id="nvout" title="縮小">－</button><button id="nvfit" title="縮放到全部">⤢</button><hr><button id="nvmeas" title="兩點量距（點兩下量距離；Esc 或再按一次結束）">📏</button><button id="nvsnap" title="吸附設定">⌖</button><hr><button id="nviso" title="等角視圖">◩</button><button id="nvbot" title="仰視（從下往上看）">下</button></div>
+  <div class="hint" id="hint">拖曳旋轉・滾輪縮放・右鍵平移・點物件看資料並設為旋轉中心・右上視角方塊切換視圖・📏 兩點量距</div>
 </main>
 </div>
 <script>
@@ -402,7 +418,7 @@ function tick(){need=false;
   inTick=true;let moving=ctl.update();inTick=false;   // 阻尼仍在滑動時回傳 true（update 內觸發的 change 不另排程）
   // 模型尺度數千公分，阻尼尾巴要好幾秒才低於 OrbitControls 的門檻；每幀移動 <0.2 cm 就視為靜止
   if(moving&&!fly&&cam.position.distanceTo(p0)<0.2&&ctl.target.distanceTo(t0)<0.2)moving=false;
-  renderer.render(scene,cam);placeLabels();vcSync();
+  renderer.render(scene,cam);placeLabels();vcSync();measSync();
   if(fly||moving)requestRender();
 }
 function resize(){if(!renderer)return;const w=main.clientWidth,h=main.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();requestRender()}
@@ -659,10 +675,57 @@ function setNavMode(pan){ctl.mouseButtons.LEFT=pan?THREE.MOUSE.PAN:THREE.MOUSE.R
   $('nvorbit').onclick=()=>setNavMode(false);$('nvpan').onclick=()=>setNavMode(true);
   $('nvin').onclick=()=>zoomBy(0.7);$('nvout').onclick=()=>zoomBy(1/0.7);
   $('nvfit').onclick=()=>{if(ready3d&&all)frame(all.min,all.max)};$('nviso').onclick=()=>setView('I');$('nvbot').onclick=()=>setView('B')})();
+
+// ==== 兩點量距與吸附（2026-11-18）====
+// 模型單位 cm，顯示 mm。吸附：端點＝三角面頂點、中點＝三角邊中點、垂足＝第一點到邊線的垂足、最近點＝游標下的表面點
+let measOn=false,measPts=[],measHover=null,measLine=null,measRay=null;
+const SNAP={end:true,mid:true,perp:true,near:true};
+try{const sv=JSON.parse(localStorage.getItem('huxiSnap')||'null');if(sv)Object.assign(SNAP,sv)}catch(e){}
+function measHit(e){if(!ready3d)return null;measRay=measRay||new THREE.Raycaster();const r=canvas.getBoundingClientRect();
+  const v=new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);measRay.setFromCamera(v,cam);
+  const ms=Object.keys(G).filter(k=>G[k].mesh&&G[k].mesh.visible).map(k=>G[k].mesh);const hit=measRay.intersectObjects(ms,false)[0];if(!hit)return null;
+  const geo=hit.object.geometry,P=geo.attributes.position,I=geo.index.array,f=hit.faceIndex;
+  const tri=[0,1,2].map(j=>new THREE.Vector3().fromBufferAttribute(P,I[f*3+j]));
+  const px=p=>{const q=p.clone().project(cam);return new THREE.Vector2((q.x+1)/2*r.width,(1-q.y)/2*r.height)};
+  const m=new THREE.Vector2(e.clientX-r.left,e.clientY-r.top),TOL=16;let best=null;
+  const cand=(p,type,pri)=>{const d=px(p).distanceTo(m);if(d<=TOL&&(!best||pri<best.pri||(pri===best.pri&&d<best.d)))best={p:p.clone(),type,pri,d}};
+  if(SNAP.end)tri.forEach(p=>cand(p,'end',0));
+  const edges=[[0,1],[1,2],[2,0]];
+  if(SNAP.mid)edges.forEach(([a,b])=>cand(tri[a].clone().add(tri[b]).multiplyScalar(.5),'mid',1));
+  if(SNAP.perp&&measPts.length===1){const A=measPts[0].p;edges.forEach(([a,b])=>{const u=tri[b].clone().sub(tri[a]),L=u.lengthSq();if(L<1e-6)return;
+    const t=A.clone().sub(tri[a]).dot(u)/L;if(t<0||t>1)return;cand(tri[a].clone().addScaledVector(u,t),'perp',2)})}
+  if(!best&&SNAP.near)best={p:hit.point.clone(),type:'near',pri:3,d:0};
+  return best}
+const SNAPNAME={end:'端點',mid:'中點',perp:'垂足',near:'最近點'};
+let measT=0,measEv=null;
+function measMove(e){if(!measOn)return;measEv=e;if(measT)return;measT=requestAnimationFrame(()=>{measT=0;measHover=measHit(measEv);measSync()})}
+function measClick(e){const h=measHit(e);if(!h)return;if(measPts.length>=2)measPts=[];measPts.push(h);measHover=null;measDraw();measSync()}
+function measDraw(){if(measLine){scene.remove(measLine);measLine.geometry.dispose();measLine=null}
+  const res=$('mres');
+  if(measPts.length===2){const g=new THREE.BufferGeometry().setFromPoints(measPts.map(x=>x.p));
+    measLine=new THREE.Line(g,new THREE.LineBasicMaterial({color:'#e4572e',depthTest:false}));measLine.renderOrder=999;scene.add(measLine);
+    const a=measPts[0].p,b=measPts[1].p,mm=x=>(x*10).toFixed(1);
+    res.innerHTML=`距離 <b>${mm(a.distanceTo(b))}</b> mm　ΔX ${mm(Math.abs(b.x-a.x))}　ΔY ${mm(Math.abs(b.y-a.y))}　ΔZ ${mm(Math.abs(b.z-a.z))}　水平 ${mm(Math.hypot(b.x-a.x,b.y-a.y))}<button id="mclr">清除</button>`;
+    res.hidden=false;$('mclr').onclick=()=>{measPts=[];measDraw();measSync()}}
+  else if(measOn){res.innerHTML=measPts.length?'點第二點（可吸附垂足）':'量距：點第一點';res.hidden=false}
+  else res.hidden=true;
+  requestRender()}
+function measSync(){const lay=$('mlay');if(!lay)return;if(!measOn&&!measPts.length){lay.innerHTML='';return}
+  const r=canvas.getBoundingClientRect(),list=measPts.map(x=>({...x,fix:true}));if(measOn&&measHover)list.push(measHover);
+  let h='';for(const x of list){const q=x.p.clone().project(cam);if(q.z>1)continue;const X=(q.x+1)/2*r.width,Y=(1-q.y)/2*r.height;
+    h+=`<div class="mmark ${x.type}${x.fix?' fix':''}" style="left:${X}px;top:${Y}px"></div>`;if(!x.fix)h+=`<div class="mtag" style="left:${X}px;top:${Y}px">${SNAPNAME[x.type]}</div>`}
+  lay.innerHTML=h}
+function setMeas(on){measOn=on;$('nvmeas').classList.toggle('on',on);if(on){if(typeof clearPick==='function')clearPick()}else{measHover=null;measPts=[]}measDraw();measSync()}
+(function measUI(){if(!$('nvmeas'))return;
+  $('nvmeas').onclick=()=>setMeas(!measOn);$('nvsnap').onclick=()=>{const b=$('msnap');b.hidden=!b.hidden;$('nvsnap').classList.toggle('on',!b.hidden)};
+  $('msnap').querySelectorAll('input[data-s]').forEach(c=>{c.checked=!!SNAP[c.dataset.s];c.onchange=()=>{SNAP[c.dataset.s]=c.checked;try{localStorage.setItem('huxiSnap',JSON.stringify(SNAP))}catch(e){}}});
+  canvas.addEventListener('pointermove',measMove);
+  addEventListener('keydown',e=>{if(e.key==='Escape'&&measOn)setMeas(false)})})();
 function setupPicking(){const ray=new THREE.Raycaster(),v=new THREE.Vector2();let down=null;
   canvas.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,t:performance.now()}});
   canvas.addEventListener('pointerup',e=>{if(!down)return;const moved=Math.hypot(e.clientX-down.x,e.clientY-down.y),dt=performance.now()-down.t;down=null;
     if(moved>6||dt>700)return;   // 拖曳旋轉不當成點選
+    if(measOn){measClick(e);return}
     const r=canvas.getBoundingClientRect();v.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);ray.setFromCamera(v,cam);
     if(b1113){const hs=ray.intersectObjects(s1113Over,false)[0];if(hs){const r=s1113Row(hs.object,hs.faceIndex);if(r){select1113(r,false,true);return}}}
     const keys=Object.keys(G).filter(k=>G[k].mesh&&G[k].mesh.visible);const hit=ray.intersectObjects(keys.map(k=>G[k].mesh),false)[0];
