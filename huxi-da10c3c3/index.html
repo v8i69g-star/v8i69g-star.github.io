@@ -42,9 +42,9 @@ th{font-size:12px;color:var(--mute);font-weight:500;border-top:0}
 #bso.on{background:#1f5f99;color:#fff;border-color:#1f5f99}
 #blayer.on{background:var(--ink);color:var(--panel);border-color:var(--ink)}
 #layers{position:absolute;right:68px;top:48px;width:min(240px,calc(100% - 24px));max-height:calc(100% - 96px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:2}
-#layers[hidden]{display:none}#layers .lyh{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:4px}#layers .x{border:0;background:none;color:var(--mute);cursor:pointer;font-size:18px;line-height:1}
-#layers .lys{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--mute);margin:8px 0 2px}#layers .lk{font:inherit;font-size:11.5px;border:0;background:none;color:var(--accent);cursor:pointer;padding:0 4px}
-#layers .lyi{display:flex;gap:6px;align-items:flex-start;padding:3px 0;cursor:pointer}#layers .lyi input{margin:2px 0 0}
+#layers[hidden]{display:none}#layers .lyh,.lybox .lyh{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:4px}#layers .x,.lybox .x{border:0;background:none;color:var(--mute);cursor:pointer;font-size:18px;line-height:1}
+#layers .lys,.lybox .lys{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--mute);margin:8px 0 2px}#layers .lk,.lybox .lk{font:inherit;font-size:11.5px;border:0;background:none;color:var(--accent);cursor:pointer;padding:0 4px}
+#layers .lyi,.lybox .lyi{display:flex;gap:6px;align-items:flex-start;padding:3px 0;cursor:pointer}#layers .lyi input,.lybox .lyi input{margin:2px 0 0}
 .tbd{color:var(--todo);font-size:12.5px}
 td.tel a{white-space:nowrap}
 .log td:first-child{white-space:nowrap;font-variant-numeric:tabular-nums}
@@ -75,6 +75,8 @@ footer{margin-top:16px;font-size:12px;color:var(--mute)}
 .note{font-size:11.5px;color:var(--mute);line-height:1.55;margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
 
 
+.lybox{font-size:14px}.lybox .lyi{padding:4px 0}
+.lybox .sw,#layers .sw{flex:none}
 /* ==== 兩點量距（2026-11-18）==== */
 #mlay{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 #msnap{position:absolute;right:66px;top:114px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:13px;z-index:3;box-shadow:0 4px 16px rgba(0,0,0,.12)}
@@ -146,14 +148,16 @@ select{font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--line);
   <span class="upd">最後更新：2026-11-17</span>
 </header>
 <nav class="tabs" role="tablist">
-  <button role="tab" data-tab="info" aria-selected="true">現場資訊</button>
+  <button role="tab" data-tab="layers" aria-selected="true">圖層</button>
+  <button role="tab" data-tab="info" aria-selected="false">現場資訊</button>
   <button role="tab" data-tab="setout" aria-selected="false">放樣</button>
   <button role="tab" data-tab="parts" aria-selected="false">構件</button>
   <button role="tab" data-tab="issues" aria-selected="false">審查意見</button>
   <button role="tab" data-tab="load" aria-selected="false">裝載計畫</button>
   <button role="tab" data-tab="s1113" aria-selected="false">11/13 進場</button>
 </nav>
-<div class="pane" id="pane-info" role="tabpanel">
+<div class="pane" id="pane-layers" role="tabpanel"><div id="lypane" class="lybox"><p class="muted">模型載入後顯示圖層。</p></div></div>
+<div class="pane" id="pane-info" role="tabpanel" hidden>
 <section class="box" id="status">
   <h2>目前狀況</h2>
   <table>
@@ -255,6 +259,7 @@ select{font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--line);
   <h2>更新紀錄</h2>
   <table class="log">
     <tr><th>日期</th><th>內容</th></tr>
+    <tr><td>2026-11-18</td><td>左側新增「圖層」分頁並設為第一個、開網站預設顯示（與 3D 右上「圖層」面板同步）。</td></tr>
     <tr><td>2026-11-18</td><td>3D 點選物件後，旋轉中心自動移到該物件；右上新增視角方塊（上／北／東／南／西，方位環隨視角轉動）與導覽列（環轉、平移、放大、縮小、全部、等角、仰視）；新增兩點量距（距離與 ΔX／ΔY／ΔZ，mm），可吸附端點、中點、垂足、最近點。另補建 2F RC 樓版（示意，頂 400 cm、厚 15 cm 待確認）。</td></tr>
     <tr><td>2026-11-18</td><td>3D 新增「圖層」面板：所有類別可個別或分區（木構、鋼構、五金與鋼板、參考）開關；所有物件都可點選，資料卡可「隱藏此物件」或隱藏整個類別，「全部顯示」或圖層面板可全部取消隱藏。鋼構、五金等沒有逐件資料的類別，依網格相連自動分件。</td></tr>
     <tr><td>2026-11-18</td><td>「鋼構預埋件」新增放樣板中心距與方向：相鄰中心斜距 16 組與 X／Y 分量、P14／P15 到 A 梯上緣距離、4 條共線線組與 P04／P07 最近兩角定位；可下載中心距 DWG／PDF／CSV、方向圖解 R2、P14P15 到 A 梯放大圖。</td></tr>
@@ -498,7 +503,7 @@ function build3d(groups){
     g.mesh=mesh;
     all.expandByPoint(new THREE.Vector3(...g.bmin));all.expandByPoint(new THREE.Vector3(...g.bmax));
   });
-  ready3d=true;
+  ready3d=true;if(!$("pane-layers").hidden)layerPanel($("lypane"));
   const l=$('load');if(l)l.remove();
   setupPicking(); recolor(); refilter();
   resize(); frame(all.min,all.max,true); apply();
@@ -587,17 +592,17 @@ function syncEyes(){document.querySelectorAll('.eye').forEach(e=>{const g=G[e.da
       el.onclick=()=>{curIssue=no;document.querySelectorAll('.iss').forEach(x=>x.classList.remove('on'));el.classList.add('on');focus(keys)};
       il.appendChild(el)})}
   renderIssues();
-  $('reset').onclick=()=>{if(soOn)showTab('info');if(b1113)toggle1113(false);curIssue=null;sel.clear();for(const k in G)G[k].vis=true;if(ready3d)unhideAll();syncEyes();document.querySelectorAll('.iss').forEach(x=>x.classList.remove('on'));apply();if(ready3d)frame(all.min,all.max)};
+  $('reset').onclick=()=>{if(soOn)showTab('layers');if(b1113)toggle1113(false);curIssue=null;sel.clear();for(const k in G)G[k].vis=true;if(ready3d)unhideAll();syncEyes();document.querySelectorAll('.iss').forEach(x=>x.classList.remove('on'));apply();if(ready3d)frame(all.min,all.max)};
   $('xray').onclick=e=>{xray=!xray;e.target.textContent=xray?'實體':'半透明';apply()};
   syncEyes();
 })();
 
 
 // ==== 分頁 ====
-function showTab(t){if(window.__soReady)setSetout(t==='setout');document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t?'true':'false'));
+function showTab(t){if(window.__soReady)setSetout(t==='setout');if(t==='layers'&&typeof layerPanel==='function')layerPanel($('lypane'));document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t?'true':'false'));
   document.querySelectorAll('.pane').forEach(p=>p.hidden=p.id!=='pane-'+t)}
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{showTab(b.dataset.tab);try{history.replaceState(null,'','#'+b.dataset.tab)}catch(e){}});
-{const h=(location.hash||'').slice(1);if(['info','setout','parts','issues','load','s1113'].includes(h))showTab(h)}
+{const h=(location.hash||'').slice(1);if(['layers','info','setout','parts','issues','load','s1113'].includes(h))showTab(h)}
 
 // ==== 逐件木構（點選、上色、篩選）====
 const LPI={}, LPN={};
@@ -760,19 +765,19 @@ function hideSelected(){if(!selPiece)return;const {k,p}=selPiece;
   clearPick();rebuildGroup(k);layerSync()}
 function unhideAll(){const ks=[];for(const k in G){const g=G[k];let ch=false;if(g.pieces)g.pieces.forEach(p=>{if(p._hid){p._hid=false;ch=true}});if(HID[k]){delete HID[k];ch=true}if(ch)ks.push(k)}
   ks.forEach(rebuildGroup);layerSync()}
-function layerSync(){const box=$('layers');if(!box||box.hidden)return;
+function layerSync(){[$('layers'),$('lypane')].forEach(box=>{if(!box||box.hidden||!box.querySelector('input[data-k]'))return;
   box.querySelectorAll('input[data-k]').forEach(c=>{c.checked=!!G[c.dataset.k].vis});
-  const n=hiddenCount(),f=$('lyhid');if(f)f.innerHTML=n?`已隱藏單件 ${n} 件　<button class="btn" id="lyun">全部取消隱藏</button>`:'點 3D 上的物件，可在資料卡「隱藏此物件」。';
-  const u=$('lyun');if(u)u.onclick=unhideAll}
-function layerPanel(){const box=$('layers');const secs=[['木構',TIMBER],['鋼構',STEEL],['五金與鋼板',HW],['參考',ORDER.filter(k=>k.startsWith('RC'))]];
-  box.innerHTML='<div class="lyh"><b>圖層</b><span><button class="btn" data-all="1">全開</button> <button class="btn" data-all="0">全關</button> <button class="x" id="lyx" aria-label="關閉">×</button></span></div>'+
+  const n=hiddenCount(),f=box.querySelector('.lyhid');if(f)f.innerHTML=n?`已隱藏單件 ${n} 件　<button class="btn lyun">全部取消隱藏</button>`:'點 3D 上的物件，可在資料卡「隱藏此物件」。';
+  const u=box.querySelector('.lyun');if(u)u.onclick=unhideAll})}
+function layerPanel(box){box=box||$('layers');const fl=box.id==='layers';if(!fl&&!ready3d)return;const secs=[['木構',TIMBER],['鋼構',STEEL],['五金與鋼板',HW],['參考',ORDER.filter(k=>k.startsWith('RC'))]];
+  box.innerHTML='<div class="lyh"><b>圖層</b><span><button class="btn" data-all="1">全開</button> <button class="btn" data-all="0">全關</button> '+(fl?'<button class="x lyx" aria-label="關閉">×</button>':'')+'</span></div>'+
     secs.map(([t,ks])=>{ks=ks.filter(k=>G[k]);if(!ks.length)return'';return `<div class="lys"><span>${t}</span><span><button class="lk" data-sec="${t}" data-on="1">開</button><button class="lk" data-sec="${t}" data-on="0">關</button></span></div>`+
-      ks.map(k=>`<label class="lyi"><input type="checkbox" data-k="${esc(k)}"><span class="sw" style="background:${COLOR[k]}"></span>${esc(k)}</label>`).join('')}).join('')+'<div class="muted" id="lyhid" style="margin-top:8px"></div>';
+      ks.map(k=>`<label class="lyi"><input type="checkbox" data-k="${esc(k)}"><span class="sw" style="background:${COLOR[k]}"></span>${esc(k)}</label>`).join('')}).join('')+'<div class="muted lyhid" style="margin-top:8px"></div>';
   const set=(ks,on)=>{ks.forEach(k=>{if(G[k])G[k].vis=on});if(!on&&selPiece&&!G[selPiece.k].vis)clearPick();syncEyes();apply()};
   box.querySelectorAll('input[data-k]').forEach(c=>c.onchange=()=>set([c.dataset.k],c.checked));
   box.querySelectorAll('[data-all]').forEach(b=>b.onclick=()=>set(Object.keys(G),b.dataset.all==='1'));
   box.querySelectorAll('[data-sec]').forEach(b=>b.onclick=()=>set(secs.find(s=>s[0]===b.dataset.sec)[1],b.dataset.on==='1'));
-  $('lyx').onclick=()=>toggleLayers(false);layerSync()}
+  const x=box.querySelector('.lyx');if(x)x.onclick=()=>toggleLayers(false);layerSync()}
 function toggleLayers(on){const box=$('layers'),b=$('blayer');box.hidden=!on;if(on)layerPanel();b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false')}
 $('blayer').onclick=()=>toggleLayers($('layers').hidden);
 function normIron(q){const m=/^0*(\d{1,3})\s*([AB])$/i.exec(q.trim());return m?m[1].padStart(3,'0')+m[2].toUpperCase():null}
@@ -943,8 +948,8 @@ function setSetout(on){if(on===soOn)return;soOn=on;
   pane.querySelectorAll('.tso tbody tr').forEach(tr=>tr.onclick=()=>{const id=tr.dataset.id;const p=SETOUT.plates.find(x=>x.id===id);
     if(p)return soGo(p);const s=SETOUT.stairs.find(x=>x.id===id);if(s){soMark(id);soTop(s.c[0],s.c[1],80)}});
   $('soall').onclick=()=>{setSetout(true);soAll()};
-  $('sooff').onclick=()=>showTab('info');
-  const b=$('bso');if(b)b.onclick=()=>{if(soOn)showTab('info');else showTab('setout')};
+  $('sooff').onclick=()=>showTab('layers');
+  const b=$('bso');if(b)b.onclick=()=>{if(soOn)showTab('layers');else showTab('setout')};
   window.__soReady=true;
   if((location.hash||'')==='#setout')setSetout(true);
 })();
