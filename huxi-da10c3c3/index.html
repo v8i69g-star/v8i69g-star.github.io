@@ -158,6 +158,17 @@ select{font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--line);
     <tr><td>C10</td><td>P12</td><td>CA-120（化學毛栓）</td><td>55 mm</td></tr>
     <tr><td>C11</td><td>P06</td><td>CA-137（化學毛栓）</td><td>56 mm</td></tr>
   </table>
+  <h3 style="font-size:14px;margin:12px 0 6px">放樣板中心距與方向（1151118）</h3>
+  <table>
+    <tr><th>線組</th><th>板邊角</th><th>柱腳</th><th>放法</th></tr>
+    <tr><td>A</td><td>48.0°</td><td>P01、P05、P06</td><td>三中心共線，拉 P06–P01 線</td></tr>
+    <tr><td>B</td><td>60.0°</td><td>P02、P03</td><td>中心只差 755 mm，用方向點延長</td></tr>
+    <tr><td>C</td><td>4.6°</td><td>P08～P11</td><td>四中心共線，拉 P11–P08 線</td></tr>
+    <tr><td>D</td><td>3.0°</td><td>P12～P15</td><td>四中心共線，拉 P15–P12 線</td></tr>
+    <tr><td>單獨</td><td>6.77°</td><td>P07</td><td>下緣兩角到 P08 上緣兩角 404.2、419.9 mm</td></tr>
+    <tr><td>單獨</td><td>60.18°</td><td>P04（530×410）</td><td>長邊兩角到 P01 最近兩角 4512.9、4605.0 mm</td></tr>
+  </table>
+  <p class="muted" style="margin:6px 0 0">相鄰板中心斜距 16 組、兩排 X 向與兩列 Y 向分量見中心距 DWG／PDF。P15、P14 中心到 A 梯梯段上緣（Y 向）2546、2592 mm。C、D 兩排差 1.6°，各拉各的線；P07 不可照 P08 方向放（差 2.17°）。</p>
   <h3 style="font-size:14px;margin:12px 0 6px">下載</h3>
   <div id="dl"></div>
   <p class="muted" id="dlmsg"></p>
@@ -172,6 +183,7 @@ select{font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--line);
     <tr><td>基礎放樣圖</td><td>R05<div class="muted">2026-09-25</div></td><td><span class="tbd">OneDrive 連結待設定</span></td></tr>
     <tr><td>牙桿與定位鐵件組裝圖解</td><td><span class="tbd">版本待補</span></td><td><span class="tbd">OneDrive 連結待設定</span></td></tr>
     <tr><td>鋼構預埋核對平面圖（給鋼構廠）</td><td>1151117<div class="muted">2026-11-17</div></td><td><a href="#steelembed">本頁下載</a></td></tr>
+    <tr><td>鋼構放樣板中心距圖、方向圖解</td><td>1151118（圖解 R2）<div class="muted">2026-11-18</div></td><td><a href="#steelembed">本頁下載</a></td></tr>
     <tr><td>鋼構加工圖（鋼構廠）</td><td>2026-07<div class="muted">缺樓梯與欄杆二次加工圖</div></td><td><span class="tbd">OneDrive 連結待設定</span></td></tr>
   </table>
   <p class="muted">圖檔放在公司雲端，點連結需要登入或 email 驗證碼。舊版圖請勿使用。</p>
@@ -211,6 +223,7 @@ select{font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--line);
   <h2>更新紀錄</h2>
   <table class="log">
     <tr><th>日期</th><th>內容</th></tr>
+    <tr><td>2026-11-18</td><td>「鋼構預埋件」新增放樣板中心距與方向：相鄰中心斜距 16 組與 X／Y 分量、P14／P15 到 A 梯上緣距離、4 條共線線組與 P04／P07 最近兩角定位；可下載中心距 DWG／PDF／CSV、方向圖解 R2、P14P15 到 A 梯放大圖。</td></tr>
     <tr><td>2026-11-17</td><td>新增「放樣」分頁與 3D 上方「放樣模式」按鈕：上部建物全部隱藏，只留基礎放樣物件與鋼構柱腳放樣板 15 座中心點、樓梯錨栓，由上往下看，點表格可定位。</td></tr>
     <tr><td>2026-11-17</td><td>網站取消密碼，打開即可瀏覽與下載。</td></tr>
     <tr><td>2026-11-17</td><td>新增「鋼構預埋件」：柱腳放樣板 15 座、樓梯錨栓 8 支，列出 11 處鋼構錨栓與木構錨栓中心距小於 60 mm 的位置；待確認事項增加樓梯錨栓缺組、柱腳件號、放樣板固定方式、柱腳與木構鐵件重疊、鋼構放樣點 5 項；圖說新增「鋼構預埋核對平面圖 1151117」，PDF、放樣板中心點 DWG 與 CSV 可在本頁下載。</td></tr>
@@ -270,7 +283,7 @@ document.querySelectorAll('td.tel').forEach(td=>{
 <script>
 // 下載檔：加密存放，用登入時的金鑰解密後存檔
 (function(){
-  const DL=[{"name":"湖西_鋼構放樣板中心點_1151117.csv","file":"dl.fe7ad315a9.bin","size":955},{"name":"湖西_鋼構放樣板中心點_1151117.dwg","file":"dl.cafed2296d.bin","size":40502},{"name":"湖西_鋼構預埋核對平面圖_1151117.pdf","file":"dl.420df2124f.bin","size":1634772}];
+  const DL=[{"name":"湖西_P14P15到A梯_放大_1151118.pdf","file":"dl.ce5e9534a4.bin","size":39929},{"name":"湖西_鋼構放樣板中心距_1151118.dwg","file":"dl.a1be5ec1fd.bin","size":67550},{"name":"湖西_鋼構放樣板中心距_1151118.pdf","file":"dl.a2f4ac783a.bin","size":95782},{"name":"湖西_鋼構放樣板中心距表_1151118.csv","file":"dl.6ff2584f6e.bin","size":967},{"name":"湖西_鋼構放樣板中心點_1151117.csv","file":"dl.fe7ad315a9.bin","size":955},{"name":"湖西_鋼構放樣板中心點_1151117.dwg","file":"dl.cafed2296d.bin","size":40502},{"name":"湖西_鋼構放樣板方向圖解_1151118_R2.pdf","file":"dl.99dfc0301f.bin","size":947035},{"name":"湖西_鋼構預埋核對平面圖_1151117.pdf","file":"dl.420df2124f.bin","size":1634772}];
   const box=document.getElementById('dl'),msg=document.getElementById('dlmsg');
   if(!box)return;
   if(!DL||!DL.length){box.innerHTML='<span class="muted">目前沒有可下載的檔案。</span>';return}
