@@ -40,6 +40,11 @@ th{font-size:12px;color:var(--mute);font-weight:500;border-top:0}
 .slbl.st{background:#0b7a3b}
 .tso tbody tr{cursor:pointer}.tso tbody tr.on{background:var(--sel)}
 #bso.on{background:#1f5f99;color:#fff;border-color:#1f5f99}
+#blayer.on{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+#layers{position:absolute;right:12px;top:48px;width:min(240px,calc(100% - 24px));max-height:calc(100% - 96px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:2}
+#layers[hidden]{display:none}#layers .lyh{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:4px}#layers .x{border:0;background:none;color:var(--mute);cursor:pointer;font-size:18px;line-height:1}
+#layers .lys{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--mute);margin:8px 0 2px}#layers .lk{font:inherit;font-size:11.5px;border:0;background:none;color:var(--accent);cursor:pointer;padding:0 4px}
+#layers .lyi{display:flex;gap:6px;align-items:flex-start;padding:3px 0;cursor:pointer}#layers .lyi input{margin:2px 0 0}
 .tbd{color:var(--todo);font-size:12.5px}
 td.tel a{white-space:nowrap}
 .log td:first-child{white-space:nowrap;font-variant-numeric:tabular-nums}
@@ -158,6 +163,17 @@ select{font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--line);
     <tr><td>C10</td><td>P12</td><td>CA-120（化學毛栓）</td><td>55 mm</td></tr>
     <tr><td>C11</td><td>P06</td><td>CA-137（化學毛栓）</td><td>56 mm</td></tr>
   </table>
+  <h3 style="font-size:14px;margin:12px 0 6px">放樣板中心距與方向（1151118）</h3>
+  <table>
+    <tr><th>線組</th><th>板邊角</th><th>柱腳</th><th>放法</th></tr>
+    <tr><td>A</td><td>48.0°</td><td>P01、P05、P06</td><td>三中心共線，拉 P06–P01 線</td></tr>
+    <tr><td>B</td><td>60.0°</td><td>P02、P03</td><td>中心只差 755 mm，用方向點延長</td></tr>
+    <tr><td>C</td><td>4.6°</td><td>P08～P11</td><td>四中心共線，拉 P11–P08 線</td></tr>
+    <tr><td>D</td><td>3.0°</td><td>P12～P15</td><td>四中心共線，拉 P15–P12 線</td></tr>
+    <tr><td>單獨</td><td>6.77°</td><td>P07</td><td>下緣兩角到 P08 上緣兩角 404.2、419.9 mm</td></tr>
+    <tr><td>單獨</td><td>60.18°</td><td>P04（530×410）</td><td>長邊兩角到 P01 最近兩角 4512.9、4605.0 mm</td></tr>
+  </table>
+  <p class="muted" style="margin:6px 0 0">相鄰板中心斜距 16 組、兩排 X 向與兩列 Y 向分量見中心距 DWG／PDF。P15、P14 中心到 A 梯梯段上緣（Y 向）2546、2592 mm。C、D 兩排差 1.6°，各拉各的線；P07 不可照 P08 方向放（差 2.17°）。</p>
   <h3 style="font-size:14px;margin:12px 0 6px">下載</h3>
   <div id="dl"></div>
   <p class="muted" id="dlmsg"></p>
@@ -172,6 +188,7 @@ select{font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--line);
     <tr><td>基礎放樣圖</td><td>R05<div class="muted">2026-09-25</div></td><td><span class="tbd">OneDrive 連結待設定</span></td></tr>
     <tr><td>牙桿與定位鐵件組裝圖解</td><td><span class="tbd">版本待補</span></td><td><span class="tbd">OneDrive 連結待設定</span></td></tr>
     <tr><td>鋼構預埋核對平面圖（給鋼構廠）</td><td>1151117<div class="muted">2026-11-17</div></td><td><a href="#steelembed">本頁下載</a></td></tr>
+    <tr><td>鋼構放樣板中心距圖、方向圖解</td><td>1151118（圖解 R2）<div class="muted">2026-11-18</div></td><td><a href="#steelembed">本頁下載</a></td></tr>
     <tr><td>鋼構加工圖（鋼構廠）</td><td>2026-07<div class="muted">缺樓梯與欄杆二次加工圖</div></td><td><span class="tbd">OneDrive 連結待設定</span></td></tr>
   </table>
   <p class="muted">圖檔放在公司雲端，點連結需要登入或 email 驗證碼。舊版圖請勿使用。</p>
@@ -211,6 +228,8 @@ select{font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--line);
   <h2>更新紀錄</h2>
   <table class="log">
     <tr><th>日期</th><th>內容</th></tr>
+    <tr><td>2026-11-18</td><td>3D 新增「圖層」面板：所有類別可個別或分區（木構、鋼構、五金與鋼板、參考）開關；所有物件都可點選，資料卡可「隱藏此物件」或隱藏整個類別，「全部顯示」或圖層面板可全部取消隱藏。鋼構、五金等沒有逐件資料的類別，依網格相連自動分件。</td></tr>
+    <tr><td>2026-11-18</td><td>「鋼構預埋件」新增放樣板中心距與方向：相鄰中心斜距 16 組與 X／Y 分量、P14／P15 到 A 梯上緣距離、4 條共線線組與 P04／P07 最近兩角定位；可下載中心距 DWG／PDF／CSV、方向圖解 R2、P14P15 到 A 梯放大圖。</td></tr>
     <tr><td>2026-11-17</td><td>新增「放樣」分頁與 3D 上方「放樣模式」按鈕：上部建物全部隱藏，只留基礎放樣物件與鋼構柱腳放樣板 15 座中心點、樓梯錨栓，由上往下看，點表格可定位。</td></tr>
     <tr><td>2026-11-17</td><td>網站取消密碼，打開即可瀏覽與下載。</td></tr>
     <tr><td>2026-11-17</td><td>新增「鋼構預埋件」：柱腳放樣板 15 座、樓梯錨栓 8 支，列出 11 處鋼構錨栓與木構錨栓中心距小於 60 mm 的位置；待確認事項增加樓梯錨栓缺組、柱腳件號、放樣板固定方式、柱腳與木構鐵件重疊、鋼構放樣點 5 項；圖說新增「鋼構預埋核對平面圖 1151117」，PDF、放樣板中心點 DWG 與 CSV 可在本頁下載。</td></tr>
@@ -253,10 +272,11 @@ select{font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--line);
 <main>
   <canvas id="c"></canvas>
   <div id="load"><span id="loadt">模型載入中…</span><div id="bar"><i></i></div></div>
-  <div class="top"><button id="reset">全部顯示</button><button id="xray">半透明</button><button id="b1113" class="tag1113" aria-pressed="false">11月13號進場鋼構</button><button id="bso" aria-pressed="false">放樣模式</button></div>
+  <div class="top"><button id="reset">全部顯示</button><button id="xray">半透明</button><button id="b1113" class="tag1113" aria-pressed="false">11月13號進場鋼構</button><button id="bso" aria-pressed="false">放樣模式</button><button id="blayer" aria-pressed="false">圖層</button></div>
+  <div id="layers" hidden></div>
   <div id="labels"></div>
   <div id="card" hidden></div>
-  <div class="hint" id="hint">拖曳旋轉・滾輪縮放・右鍵平移・點木構件或鐵件看資料</div>
+  <div class="hint" id="hint">拖曳旋轉・滾輪縮放・右鍵平移・點物件看資料、可隱藏・「圖層」開關類別</div>
 </main>
 </div>
 <script>
@@ -270,7 +290,7 @@ document.querySelectorAll('td.tel').forEach(td=>{
 <script>
 // 下載檔：加密存放，用登入時的金鑰解密後存檔
 (function(){
-  const DL=[{"name":"湖西_鋼構放樣板中心點_1151117.csv","file":"dl.fe7ad315a9.bin","size":955},{"name":"湖西_鋼構放樣板中心點_1151117.dwg","file":"dl.cafed2296d.bin","size":40502},{"name":"湖西_鋼構預埋核對平面圖_1151117.pdf","file":"dl.420df2124f.bin","size":1634772}];
+  const DL=[{"name":"湖西_P14P15到A梯_放大_1151118.pdf","file":"dl.ce5e9534a4.bin","size":39929},{"name":"湖西_鋼構放樣板中心距_1151118.dwg","file":"dl.a1be5ec1fd.bin","size":67550},{"name":"湖西_鋼構放樣板中心距_1151118.pdf","file":"dl.a2f4ac783a.bin","size":95782},{"name":"湖西_鋼構放樣板中心距表_1151118.csv","file":"dl.6ff2584f6e.bin","size":967},{"name":"湖西_鋼構放樣板中心點_1151117.csv","file":"dl.fe7ad315a9.bin","size":955},{"name":"湖西_鋼構放樣板中心點_1151117.dwg","file":"dl.cafed2296d.bin","size":40502},{"name":"湖西_鋼構放樣板方向圖解_1151118_R2.pdf","file":"dl.99dfc0301f.bin","size":947035},{"name":"湖西_鋼構預埋核對平面圖_1151117.pdf","file":"dl.420df2124f.bin","size":1634772}];
   const box=document.getElementById('dl'),msg=document.getElementById('dlmsg');
   if(!box)return;
   if(!DL||!DL.length){box.innerHTML='<span class="muted">目前沒有可下載的檔案。</span>';return}
@@ -506,7 +526,7 @@ function placeLabels(){placeIronLabels();
   const w=main.clientWidth,h=main.clientHeight;
   for(const el of labels.children){if(!el._p)continue;const v=el._p.clone().project(cam);el.style.display=v.z>1?'none':'';el.style.left=((v.x+1)/2*w)+'px';el.style.top=((1-v.y)/2*h-4)+'px'}
 }
-function syncEyes(){document.querySelectorAll('.eye').forEach(e=>{const g=G[e.dataset.k];e.classList.toggle('off',!g.vis);e.textContent=g.vis?'隱藏':'顯示'})}
+function syncEyes(){document.querySelectorAll('.eye').forEach(e=>{const g=G[e.dataset.k];e.classList.toggle('off',!g.vis);e.textContent=g.vis?'隱藏':'顯示'});if(typeof layerSync==='function')layerSync()}
 
 // ---- 清單、統計、審查意見（先畫，與 3D 無關）----
 (function ui(){
@@ -535,7 +555,7 @@ function syncEyes(){document.querySelectorAll('.eye').forEach(e=>{const g=G[e.da
       el.onclick=()=>{curIssue=no;document.querySelectorAll('.iss').forEach(x=>x.classList.remove('on'));el.classList.add('on');focus(keys)};
       il.appendChild(el)})}
   renderIssues();
-  $('reset').onclick=()=>{if(soOn)showTab('info');if(b1113)toggle1113(false);curIssue=null;sel.clear();for(const k in G)G[k].vis=true;syncEyes();document.querySelectorAll('.iss').forEach(x=>x.classList.remove('on'));apply();if(ready3d)frame(all.min,all.max)};
+  $('reset').onclick=()=>{if(soOn)showTab('info');if(b1113)toggle1113(false);curIssue=null;sel.clear();for(const k in G)G[k].vis=true;if(ready3d)unhideAll();syncEyes();document.querySelectorAll('.iss').forEach(x=>x.classList.remove('on'));apply();if(ready3d)frame(all.min,all.max)};
   $('xray').onclick=e=>{xray=!xray;e.target.textContent=xray?'實體':'半透明';apply()};
   syncEyes();
 })();
@@ -561,7 +581,7 @@ function pieceColor(k,p){const d=LPI[p.id];
   if(cmode==='box')return d&&d.box?hexRgb(BOXC[(d.box-1)%7]):hexRgb(NEUTRAL);
   if(cmode==='seq')return d&&d.mo?seqColor(d.mo):hexRgb(NEUTRAL);
   return hexRgb(COLOR[k])}
-function pieceVisible(p){if(!lpActive())return true;const d=LPI[p.id];if(!d||!d.box)return false;
+function pieceVisible(p){if(p._hid)return false;if(!lpActive())return true;const d=LPI[p.id];if(!d||!d.box)return false;
   if(fBox&&String(d.box)!==fBox)return false;if(fPkg&&d.pkg!==fPkg)return false;if(seqMax<MOMAX&&!(d.mo<=seqMax))return false;return true}
 function recolor(){if(!ready3d)return;TIMBER.forEach(k=>{const g=G[k];if(!g.mesh||!g.pieces)return;const col=g.mesh.geometry.attributes.color;
   g.pieces.forEach(p=>{const [r,gg,b]=pieceColor(k,p);for(let v=p.v0;v<p.v1;v++)col.setXYZ(v,r,gg,b)});col.needsUpdate=true});requestRender()}
@@ -569,7 +589,7 @@ function refilter(){if(!ready3d)return;TIMBER.forEach(k=>{const g=G[k];if(!g.mes
   const vis=g.pieces.filter(pieceVisible);let n=0;vis.forEach(p=>n+=p.t1-p.t0);
   const out=new Uint32Array(n*3);let o=0;g.visList=[];
   vis.forEach(p=>{g.visList.push([o/3,p]);out.set(g.fullIdx.subarray(p.t0*3,p.t1*3),o);o+=(p.t1-p.t0)*3});
-  g.mesh.geometry.setIndex(new THREE.BufferAttribute(out,1));if(g.mesh.children[0])g.mesh.children[0].visible=!lpActive()});
+  g.mesh.geometry.setIndex(new THREE.BufferAttribute(out,1));if(g.mesh.children[0])g.mesh.children[0].visible=!lpActive()&&!g.pieces.some(p=>p._hid)});
   if(selPiece&&!pieceVisible(selPiece.p))clearPick();apply()}
 function pieceAt(g,tri){const L=g.visList;let lo=0,hi=L.length-1;while(lo<hi){const m=(lo+hi+1)>>1;if(L[m][0]<=tri)lo=m;else hi=m-1}return L[lo]&&L[lo][1]}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
@@ -577,7 +597,10 @@ function ironCard(p){const t=p.grp==='250'?'「250」組（A：規格型，長�
   let h=`<h4><span>${p.name?esc(p.name):'CLT 基礎鐵件'}</span><button class="x" aria-label="關閉">×</button></h4><dl><dt>類別</dt><dd>CLT 基礎鐵件</dd>`;
   h+=`<dt>鐵件編號</dt><dd>${p.name?esc(p.name):'模型內無編號'}</dd><dt>組別</dt><dd>${esc(t)}</dd><dt>長度</dt><dd>${p.dims[0]} mm</dd><dt>斷面外框</dt><dd>${p.dims[1]} × ${p.dims[2]} mm</dd></dl>`;
   h+=`<div class="muted" style="margin-top:6px">編號＝位置號（依 X→Y 排序）＋種類，與 9/25 放樣圖 R05 相同。尺寸由模型網格實算。</div>`;return h}
-function cardHtml(k,p){if(k==='CLT 基礎鐵件')return ironCard(p);const d=LPI[p.id]||{};const dim=p.dims.map(x=>x.toFixed(1)).join(' × ');
+function compCard(k,p){const s=[0,1,2].map(i=>Math.round((p.bmax[i]-p.bmin[i])*10));
+  return `<h4><span>${esc(k)}</span><button class="x" aria-label="關閉">×</button></h4><dl><dt>類別</dt><dd>${esc(k)}</dd><dt>外框</dt><dd>${s[0]} × ${s[1]} × ${s[2]} mm（X×Y×Z，依網格）</dd><dt>三角面</dt><dd>${p.tris.length}</dd></dl>`+
+    `<div class="muted" style="margin-top:6px">此類別沒有逐件資料，依網格相連自動分出這一件；互相接觸的構件可能一起被選到。</div>`}
+function cardHtml(k,p){if(p.comp)return compCard(k,p);if(k==='CLT 基礎鐵件')return ironCard(p);const d=LPI[p.id]||{};const dim=p.dims.map(x=>x.toFixed(1)).join(' × ');
   let h=`<h4><span>${esc(d.no||'木構件')}</span><button class="x" aria-label="關閉">×</button></h4><dl><dt>類別</dt><dd>${esc(k)}</dd>`;
   if(d.no){h+=`<dt>材質</dt><dd>${esc(d.mat)}</dd><dt>長寬厚</dt><dd>${d.L} × ${d.W} × ${d.T} mm（原廠）</dd><dt>重量</dt><dd>${d.kg} kg</dd>`+
     `<dt>櫃號</dt><dd>${d.box}</dd><dt>包裝號</dt><dd>${esc(d.pkg)}</dd><dt>裝櫃順序</dt><dd>${d.lo}</dd><dt>安裝順序</dt><dd>${d.mo}</dd>`}
@@ -585,11 +608,12 @@ function cardHtml(k,p){if(k==='CLT 基礎鐵件')return ironCard(p);const d=LPI[
   if(d.no&&d.conf==='中')h+=`<div class="warnline">配對可信度：中（模型與原廠外框差 ${d.err} mm），請以現場標籤為準。</div>`;
   if(!d.no)h+=`<div class="warnline">未對到原廠資料${d.unmatched?'：'+esc(d.unmatched):''}</div>`;
   return h}
-function showCard(k,p){const c=$('card');c.innerHTML=cardHtml(k,p);c.hidden=false;c.querySelector('.x').onclick=clearPick}
+function showCard(k,p){const c=$('card');c.innerHTML=cardHtml(k,p)+'<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn" id="hideone">隱藏此物件</button><button class="btn" id="hidegrp">隱藏整個「'+esc(k)+'」</button></div>';c.hidden=false;c.querySelector('.x').onclick=clearPick;
+  $('hideone').onclick=hideSelected;$('hidegrp').onclick=()=>{G[k].vis=false;clearPick();syncEyes();apply()}}
 function clearPick(){selPiece=null;$('card').hidden=true;if(overlay){scene.remove(overlay);overlay.geometry.dispose();overlay=null}requestRender()}
 function pick(k,p,fly){selPiece={k,p};if(overlay){scene.remove(overlay);overlay.geometry.dispose()}
   const g=G[k],geo=new THREE.BufferGeometry();geo.setAttribute('position',g.mesh.geometry.attributes.position);
-  geo.setIndex(new THREE.BufferAttribute(g.fullIdx.slice(p.t0*3,p.t1*3),1));
+  geo.setIndex(new THREE.BufferAttribute(p.comp?p.idx:g.fullIdx.slice(p.t0*3,p.t1*3),1));
   overlay=new THREE.Mesh(geo,new THREE.MeshPhongMaterial({color:'#e4572e',flatShading:true,side:THREE.DoubleSide,shininess:0,specular:0,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));
   scene.add(overlay);showCard(k,p);
   if(fly)frame(new THREE.Vector3(...p.bmin).addScalar(-60),new THREE.Vector3(...p.bmax).addScalar(60));requestRender()}
@@ -599,9 +623,53 @@ function setupPicking(){const ray=new THREE.Raycaster(),v=new THREE.Vector2();le
     if(moved>6||dt>700)return;   // 拖曳旋轉不當成點選
     const r=canvas.getBoundingClientRect();v.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);ray.setFromCamera(v,cam);
     if(b1113){const hs=ray.intersectObjects(s1113Over,false)[0];if(hs){const r=s1113Row(hs.object,hs.faceIndex);if(r){select1113(r,false,true);return}}}
-    const ms=PICK.map(k=>G[k]&&G[k].mesh).filter(m=>m&&m.visible);const hit=ray.intersectObjects(ms,false)[0];
+    const keys=Object.keys(G).filter(k=>G[k].mesh&&G[k].mesh.visible);const hit=ray.intersectObjects(keys.map(k=>G[k].mesh),false)[0];
     if(!hit){clearPick();return}
-    const k=PICK.find(x=>G[x]&&G[x].mesh===hit.object),p=G[k].visList&&pieceAt(G[k],hit.faceIndex);if(p)pick(k,p,false)})}
+    const k=keys.find(x=>G[x].mesh===hit.object),g=G[k];
+    if(g.visList){const p=pieceAt(g,hit.faceIndex);if(p)pick(k,p,false);return}
+    pick(k,compPiece(k,g.triMap?g.triMap[hit.faceIndex]:hit.faceIndex),false)})}
+
+// ==== 圖層開關與單件隱藏（2026-11-18）====
+// 逐件類別（木構、CLT 基礎鐵件）用 p._hid；其他類別沒有逐件資料，依網格相連分件，隱藏的三角面記在 HID[k]
+const HID={};
+function adjOf(k){const g=G[k];if(g._adj)return g._adj;const I=g.fullIdx,nv=g.mesh.geometry.attributes.position.count,off=new Uint32Array(nv+1);
+  for(let i=0;i<I.length;i++)off[I[i]+1]++;for(let v=0;v<nv;v++)off[v+1]+=off[v];const at=off.slice(0,nv),T=new Uint32Array(I.length);
+  for(let i=0;i<I.length;i++)T[at[I[i]]++]=(i/3)|0;return g._adj={off,T}}
+function compPiece(k,t0){const g=G[k],I=g.fullIdx,{off,T}=adjOf(k),seen=new Uint8Array(I.length/3),tris=[t0];seen[t0]=1;
+  for(let q=0;q<tris.length;q++){const t=tris[q];for(let j=0;j<3;j++){const v=I[t*3+j];for(let a=off[v];a<off[v+1];a++){const u=T[a];if(!seen[u]){seen[u]=1;tris.push(u)}}}}
+  const P=g.mesh.geometry.attributes.position.array,a=[1e9,1e9,1e9],b=[-1e9,-1e9,-1e9],idx=new Uint32Array(tris.length*3);
+  tris.forEach((u,i)=>{for(let j=0;j<3;j++){const v=I[u*3+j];idx[i*3+j]=v;for(let c=0;c<3;c++){const x=P[v*3+c];if(x<a[c])a[c]=x;if(x>b[c])b[c]=x}}});
+  return {comp:true,tris,idx,bmin:a,bmax:b}}
+function rebuildGroup(k){const g=G[k];if(!g||!g.mesh)return;const I=g.fullIdx;
+  if(TIMBER.includes(k)&&g.pieces){refilter();return}
+  if(g.pieces){const vis=g.pieces.filter(p=>!p._hid);let n=0;vis.forEach(p=>n+=p.t1-p.t0);const out=new Uint32Array(n*3);let o=0;g.visList=[];
+    vis.forEach(p=>{g.visList.push([o/3,p]);out.set(I.subarray(p.t0*3,p.t1*3),o);o+=(p.t1-p.t0)*3});g.mesh.geometry.setIndex(new THREE.BufferAttribute(out,1))}
+  else{const H=HID[k];if(!H||!H.size){g.mesh.geometry.setIndex(new THREE.BufferAttribute(I,1));g.triMap=null}
+    else{const nt=I.length/3,m=nt-H.size,out=new Uint32Array(m*3),map=new Uint32Array(m);let o=0;
+      for(let t=0;t<nt;t++){if(H.has(t))continue;map[o]=t;out[o*3]=I[t*3];out[o*3+1]=I[t*3+1];out[o*3+2]=I[t*3+2];o++}
+      g.mesh.geometry.setIndex(new THREE.BufferAttribute(out,1));g.triMap=map}}
+  requestRender()}
+function hiddenCount(){let n=0;for(const k in G){const g=G[k];if(g.pieces)g.pieces.forEach(p=>{if(p._hid)n++});if(HID[k])n+=HID[k]._n||0}return n}
+function hideSelected(){if(!selPiece)return;const {k,p}=selPiece;
+  if(p.comp){const H=HID[k]=HID[k]||new Set();H._n=(H._n||0)+1;p.tris.forEach(t=>H.add(t))}else p._hid=true;
+  clearPick();rebuildGroup(k);layerSync()}
+function unhideAll(){const ks=[];for(const k in G){const g=G[k];let ch=false;if(g.pieces)g.pieces.forEach(p=>{if(p._hid){p._hid=false;ch=true}});if(HID[k]){delete HID[k];ch=true}if(ch)ks.push(k)}
+  ks.forEach(rebuildGroup);layerSync()}
+function layerSync(){const box=$('layers');if(!box||box.hidden)return;
+  box.querySelectorAll('input[data-k]').forEach(c=>{c.checked=!!G[c.dataset.k].vis});
+  const n=hiddenCount(),f=$('lyhid');if(f)f.innerHTML=n?`已隱藏單件 ${n} 件　<button class="btn" id="lyun">全部取消隱藏</button>`:'點 3D 上的物件，可在資料卡「隱藏此物件」。';
+  const u=$('lyun');if(u)u.onclick=unhideAll}
+function layerPanel(){const box=$('layers');const secs=[['木構',TIMBER],['鋼構',STEEL],['五金與鋼板',HW],['參考',ORDER.filter(k=>k.startsWith('RC'))]];
+  box.innerHTML='<div class="lyh"><b>圖層</b><span><button class="btn" data-all="1">全開</button> <button class="btn" data-all="0">全關</button> <button class="x" id="lyx" aria-label="關閉">×</button></span></div>'+
+    secs.map(([t,ks])=>{ks=ks.filter(k=>G[k]);if(!ks.length)return'';return `<div class="lys"><span>${t}</span><span><button class="lk" data-sec="${t}" data-on="1">開</button><button class="lk" data-sec="${t}" data-on="0">關</button></span></div>`+
+      ks.map(k=>`<label class="lyi"><input type="checkbox" data-k="${esc(k)}"><span class="sw" style="background:${COLOR[k]}"></span>${esc(k)}</label>`).join('')}).join('')+'<div class="muted" id="lyhid" style="margin-top:8px"></div>';
+  const set=(ks,on)=>{ks.forEach(k=>{if(G[k])G[k].vis=on});if(!on&&selPiece&&!G[selPiece.k].vis)clearPick();syncEyes();apply()};
+  box.querySelectorAll('input[data-k]').forEach(c=>c.onchange=()=>set([c.dataset.k],c.checked));
+  box.querySelectorAll('[data-all]').forEach(b=>b.onclick=()=>set(Object.keys(G),b.dataset.all==='1'));
+  box.querySelectorAll('[data-sec]').forEach(b=>b.onclick=()=>set(secs.find(s=>s[0]===b.dataset.sec)[1],b.dataset.on==='1'));
+  $('lyx').onclick=()=>toggleLayers(false);layerSync()}
+function toggleLayers(on){const box=$('layers'),b=$('blayer');box.hidden=!on;if(on)layerPanel();b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false')}
+$('blayer').onclick=()=>toggleLayers($('layers').hidden);
 function normIron(q){const m=/^0*(\d{1,3})\s*([AB])$/i.exec(q.trim());return m?m[1].padStart(3,'0')+m[2].toUpperCase():null}
 function findIron(name){const g=G['CLT 基礎鐵件'];if(!g||!g.pieces)return null;const p=g.pieces.find(x=>x.name===name);return p?['CLT 基礎鐵件',p]:null}
 let lpLookup=null;   // 裝載計畫分頁提供的原廠編號搜尋
