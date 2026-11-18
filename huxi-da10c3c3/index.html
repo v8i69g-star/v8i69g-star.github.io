@@ -261,6 +261,7 @@ select{font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--line);
     <tr><th>日期</th><th>內容</th></tr>
     <tr><td>2026-11-18</td><td>左側新增「圖層」分頁並設為第一個、開網站預設顯示（與 3D 右上「圖層」面板同步）。</td></tr>
     <tr><td>2026-11-18</td><td>3D 點選物件後，旋轉中心自動移到該物件；右上新增視角方塊（上／北／東／南／西，方位環隨視角轉動）與導覽列（環轉、平移、放大、縮小、全部、等角、仰視）；新增兩點量距（距離與 ΔX／ΔY／ΔZ，mm），可吸附端點、中點、垂足、最近點。另補建 2F RC 樓版（示意，頂 400 cm、厚 15 cm 待確認）。</td></tr>
+    <tr><td>2026-11-18</td><td>圖層新增「木構螺絲（Eurotec）」：23,782 支依 BG&amp;E REV09 模型位置顯示，母圖層「全部」→ 子圖層產品線（HSPT 沉頭、WB Strong、角片螺絲、KonstruX、其他）→ 各規格，皆標支數；點螺絲看 Eurotec 料號、規格、原型號，可「只顯示此規格」供安裝與檢料核對。預設關閉，打開時才下載（約 0.13 MB）。A 梯梁非 Eurotec，以原型號為準。</td></tr>
     <tr><td>2026-11-18</td><td>3D 新增「圖層」面板：所有類別可個別或分區（木構、鋼構、五金與鋼板、參考）開關；所有物件都可點選，資料卡可「隱藏此物件」或隱藏整個類別，「全部顯示」或圖層面板可全部取消隱藏。鋼構、五金等沒有逐件資料的類別，依網格相連自動分件。</td></tr>
     <tr><td>2026-11-18</td><td>「鋼構預埋件」新增放樣板中心距與方向：相鄰中心斜距 16 組與 X／Y 分量、P14／P15 到 A 梯上緣距離、4 條共線線組與 P04／P07 最近兩角定位；可下載中心距 DWG／PDF／CSV、方向圖解 R2、P14P15 到 A 梯放大圖。</td></tr>
     <tr><td>2026-11-17</td><td>新增「放樣」分頁與 3D 上方「放樣模式」按鈕：上部建物全部隱藏，只留基礎放樣物件與鋼構柱腳放樣板 15 座中心點、樓梯錨栓，由上往下看，點表格可定位。</td></tr>
@@ -772,12 +773,12 @@ function layerSync(){[$('layers'),$('lypane')].forEach(box=>{if(!box||box.hidden
 function layerPanel(box){box=box||$('layers');const fl=box.id==='layers';if(!fl&&!ready3d)return;const secs=[['木構',TIMBER],['鋼構',STEEL],['五金與鋼板',HW],['參考',ORDER.filter(k=>k.startsWith('RC'))]];
   box.innerHTML='<div class="lyh"><b>圖層</b><span><button class="btn" data-all="1">全開</button> <button class="btn" data-all="0">全關</button> '+(fl?'<button class="x lyx" aria-label="關閉">×</button>':'')+'</span></div>'+
     secs.map(([t,ks])=>{ks=ks.filter(k=>G[k]);if(!ks.length)return'';return `<div class="lys"><span>${t}</span><span><button class="lk" data-sec="${t}" data-on="1">開</button><button class="lk" data-sec="${t}" data-on="0">關</button></span></div>`+
-      ks.map(k=>`<label class="lyi"><input type="checkbox" data-k="${esc(k)}"><span class="sw" style="background:${COLOR[k]}"></span>${esc(k)}</label>`).join('')}).join('')+'<div class="muted lyhid" style="margin-top:8px"></div>';
+      ks.map(k=>`<label class="lyi"><input type="checkbox" data-k="${esc(k)}"><span class="sw" style="background:${COLOR[k]}"></span>${esc(k)}</label>`).join('')}).join('')+'<div class="muted lyhid" style="margin-top:8px"></div><div class="lyscrew" style="margin-top:6px"></div>';
   const set=(ks,on)=>{ks.forEach(k=>{if(G[k])G[k].vis=on});if(!on&&selPiece&&!G[selPiece.k].vis)clearPick();syncEyes();apply()};
   box.querySelectorAll('input[data-k]').forEach(c=>c.onchange=()=>set([c.dataset.k],c.checked));
   box.querySelectorAll('[data-all]').forEach(b=>b.onclick=()=>set(Object.keys(G),b.dataset.all==='1'));
   box.querySelectorAll('[data-sec]').forEach(b=>b.onclick=()=>set(secs.find(s=>s[0]===b.dataset.sec)[1],b.dataset.on==='1'));
-  const x=box.querySelector('.lyx');if(x)x.onclick=()=>toggleLayers(false);layerSync()}
+  const x=box.querySelector('.lyx');if(x)x.onclick=()=>toggleLayers(false);layerSync();if(typeof screwPanel==='function')screwPanel(box)}
 function toggleLayers(on){const box=$('layers'),b=$('blayer');box.hidden=!on;if(on)layerPanel();b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false')}
 $('blayer').onclick=()=>toggleLayers($('layers').hidden);
 function normIron(q){const m=/^0*(\d{1,3})\s*([AB])$/i.exec(q.trim());return m?m[1].padStart(3,'0')+m[2].toUpperCase():null}
@@ -954,6 +955,81 @@ function setSetout(on){if(on===soOn)return;soOn=on;
   if((location.hash||'')==='#setout')setSetout(true);
 })();
 
+</script>
+<script>
+// ==== 木構螺絲（Eurotec 替代，2026-11-18）====
+// 資料：screws.json（BG&E PenghuIsland-REV09.ifc 逐支位置＋頭部方向，模型 mm），打開圖層時才下載。
+// 每種規格一個簡化模型（桿＋頭），用 InstancedMesh 重複擺放。圖層：母「木構螺絲」→ 子「產品線」→ 孫「規格」。
+(function(){
+  const LINES=['HSPT 沉頭','WB Strong','角片螺絲','KonstruX','其他（非 Eurotec 替代）'];
+  const LCOL={'HSPT 沉頭':'#c0392b','WB Strong':'#1f6fb2','角片螺絲':'#2e8b57','KonstruX':'#8e44ad','其他（非 Eurotec 替代）':'#7f8c8d'};
+  const S={data:null,loading:null,on:{},mesh:{},open:{},sel:null};
+  window.SCREW=S;
+  const fmt=n=>n.toLocaleString('en-US');
+  function load(){if(S.data)return Promise.resolve(S.data);if(S.loading)return S.loading;
+    S.loading=fetch('screws.json').then(r=>{if(!r.ok)throw new Error('螺絲資料下載失敗（'+r.status+'）');return r.json()}).then(d=>{S.data=d;d.types.forEach(t=>{if(!(t.k in S.on))S.on[t.k]=false});return d});return S.loading}
+  function build(t){if(S.mesh[t.k]||!ready3d)return S.mesh[t.k];const P=S.data.p[t.k],n=P.length/6;
+    const d=Math.max(t.hd*0.45,3),L=Math.max(t.L,5),hh=Math.min(Math.max(d*0.7,4),L*0.3),hr=Math.max(t.hd/2,d*0.8);
+    const sh=new THREE.CylinderGeometry(d/2/10,d/2/10,(L-hh)/10,6,1,true);sh.translate(0,-hh/20,0);
+    const hd=new THREE.CylinderGeometry(hr/10,d/2/10,hh/10,8,1,false);hd.translate(0,(L-hh)/20,0);
+    const mat=new THREE.MeshPhongMaterial({color:LCOL[t.line]||'#888',flatShading:true,shininess:0,specular:0});
+    const ms=[new THREE.InstancedMesh(sh,mat,n),new THREE.InstancedMesh(hd,mat,n)];
+    const m4=new THREE.Matrix4(),q=new THREE.Quaternion(),up=new THREE.Vector3(0,1,0),v=new THREE.Vector3(),p=new THREE.Vector3(),one=new THREE.Vector3(1,1,1);
+    for(let i=0;i<n;i++){p.set(P[i*6]/10-1718.419,P[i*6+1]/10-1775.155,P[i*6+2]/10);v.set(P[i*6+3],P[i*6+4],P[i*6+5]).normalize();q.setFromUnitVectors(up,v);m4.compose(p,q,one);ms[0].setMatrixAt(i,m4);ms[1].setMatrixAt(i,m4)}
+    ms.forEach(m=>{m.instanceMatrix.needsUpdate=true;m.frustumCulled=false;m.userData.screw=t.k;m.visible=false;scene.add(m)});
+    return S.mesh[t.k]=ms}
+  function apply(){if(!S.data)return;S.data.types.forEach(t=>{const on=!!S.on[t.k];if(on&&ready3d)build(t);const ms=S.mesh[t.k];if(ms)ms.forEach(m=>m.visible=on)});
+    if(S.sel&&!S.on[S.sel.k])clearSel();requestRender();sync()}
+  function set(keys,on){if(on&&!S.data){msg('螺絲資料下載中…');load().then(()=>{keys=keys==='*'?S.data.types.map(t=>t.k):keys;keys.forEach(k=>S.on[k]=on);apply();msg('')}).catch(e=>msg(e.message));return}
+    if(keys==='*')keys=S.data?S.data.types.map(t=>t.k):[];keys.forEach(k=>S.on[k]=on);apply()}
+  function msg(t){document.querySelectorAll('.scmsg').forEach(e=>e.textContent=t)}
+  function triState(el,ks){const n=ks.filter(k=>S.on[k]).length;el.checked=n>0&&n===ks.length;el.indeterminate=n>0&&n<ks.length}
+  function sync(){document.querySelectorAll('.lyscrew').forEach(box=>{if(!S.data)return;const ty=S.data.types;
+    box.querySelectorAll('input[data-sk]').forEach(c=>{c.checked=!!S.on[c.dataset.sk]});
+    box.querySelectorAll('input[data-sl]').forEach(c=>triState(c,ty.filter(t=>t.line===c.dataset.sl).map(t=>t.k)));
+    const m=box.querySelector('input[data-sall]');if(m)triState(m,ty.map(t=>t.k))})}
+  window.screwPanel=function(box){const host=box.querySelector('.lyscrew');if(!host)return;
+    if(!S.data){host.innerHTML=`<div class="lys"><span>木構螺絲（Eurotec）</span></div><label class="lyi"><input type="checkbox" data-sall="1"><span class="sw" style="background:#c0392b"></span>木構螺絲 全部<small class="muted">（約 23,782 支，打開時下載約 0.13 MB）</small></label><div class="muted scmsg"></div>`;
+      host.querySelector('[data-sall]').onchange=e=>{set('*',e.target.checked);load().then(()=>screwPanel(box))};return}
+    const ty=S.data.types,tot=ty.reduce((s,t)=>s+t.n,0);
+    let h=`<div class="lys"><span>木構螺絲（Eurotec）</span><span><button class="lk" data-sa="1">開</button><button class="lk" data-sa="0">關</button></span></div>`;
+    h+=`<label class="lyi"><input type="checkbox" data-sall="1"><span class="sw" style="background:#c0392b"></span><b>木構螺絲 全部</b>　${fmt(tot)} 支</label>`;
+    LINES.forEach(li=>{const ts=ty.filter(t=>t.line===li).sort((a,b)=>b.n-a.n);if(!ts.length)return;const n=ts.reduce((s,t)=>s+t.n,0),op=!!S.open[li];
+      h+=`<div class="lyi" style="padding-left:14px"><button class="lk sctog" data-so="${esc(li)}" aria-expanded="${op}" style="padding:0 2px">${op?'▾':'▸'}</button><label style="display:flex;gap:6px;align-items:flex-start;cursor:pointer"><input type="checkbox" data-sl="${esc(li)}"><span class="sw" style="background:${LCOL[li]}"></span>${esc(li)}　${fmt(n)} 支</label></div>`;
+      if(op)ts.forEach(t=>{h+=`<label class="lyi" style="padding-left:44px"><input type="checkbox" data-sk="${esc(t.k)}"><span>${esc(t.spec||t.name)}${t.eu?'<small class="muted">　'+t.eu+'</small>':''}<small class="muted">　原 ${esc(t.k)}</small>　<b>${fmt(t.n)}</b> 支</span></label>`})});
+    h+='<div class="muted scmsg"></div><div class="muted" style="margin-top:4px;font-size:12px">位置取自 BG&amp;E REV09 模型（2026-04-21）；型號對照 Eurotec 替代 BOM。點 3D 上的螺絲看料號。A 梯梁非 Eurotec，以原型號為準。</div>';
+    host.innerHTML=h;
+    host.querySelector('[data-sall]').onchange=e=>set('*',e.target.checked);
+    host.querySelectorAll('[data-sa]').forEach(b=>b.onclick=()=>set('*',b.dataset.sa==='1'));
+    host.querySelectorAll('input[data-sl]').forEach(c=>c.onchange=()=>set(ty.filter(t=>t.line===c.dataset.sl).map(t=>t.k),c.checked));
+    host.querySelectorAll('input[data-sk]').forEach(c=>c.onchange=()=>set([c.dataset.sk],c.checked));
+    host.querySelectorAll('.sctog').forEach(b=>b.onclick=e=>{e.preventDefault();S.open[b.dataset.so]=!S.open[b.dataset.so];screwPanel(box)});
+    sync()};
+  // ---- 點選螺絲 ----
+  let hl=null;
+  function clearSel(){S.sel=null;if(hl){scene.remove(hl);hl.geometry.dispose();hl=null}}
+  function card(t,i){const P=S.data.p[t.k],x=P[i*6],y=P[i*6+1],z=P[i*6+2];const c=$('card');
+    c.innerHTML=`<h4><span>${esc(t.eu?('Eurotec '+t.eu):t.k)}</span><button class="x" aria-label="關閉">×</button></h4><dl><dt>類別</dt><dd>木構螺絲／${esc(t.line)}</dd>`+
+      (t.eu?`<dt>品名</dt><dd>${esc(t.name)}</dd><dt>規格</dt><dd>${esc(t.spec)} mm</dd>`:'')+`<dt>原型號</dt><dd>${esc(t.k)}（BG&amp;E 模型長 ${t.L} mm）</dd><dt>同規格</dt><dd>${fmt(t.n)} 支</dd><dt>位置</dt><dd>X ${x}　Y ${y}　Z ${z}（mm）</dd></dl>`+
+      `<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn" id="sconly">只顯示此規格</button><button class="btn" id="schide">隱藏此規格</button></div>`;
+    c.hidden=false;c.querySelector('.x').onclick=()=>{clearSel();c.hidden=true;requestRender()};
+    $('sconly').onclick=()=>{S.data.types.forEach(u=>S.on[u.k]=u.k===t.k);apply()};$('schide').onclick=()=>{S.on[t.k]=false;c.hidden=true;apply()}}
+  function select(k,i){const t=S.data.types.find(u=>u.k===k);clearSel();S.sel={k,i};const ms=S.mesh[k],m4=new THREE.Matrix4();ms[0].getMatrixAt(i,m4);
+    const g=new THREE.SphereGeometry(Math.max(t.L/20,2),12,8);hl=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:'#ffcc00',transparent:true,opacity:.55,depthTest:false}));
+    hl.position.setFromMatrixPosition(m4);hl.renderOrder=10;scene.add(hl);card(t,i);requestRender()}
+  const ray=new THREE.Raycaster(),v2=new THREE.Vector2();let down=null;
+  canvas.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,t:performance.now()}});
+  canvas.addEventListener('pointerup',e=>{if(!down||!S.data)return;const mv=Math.hypot(e.clientX-down.x,e.clientY-down.y),dt=performance.now()-down.t;down=null;if(mv>6||dt>700)return;
+    // 螺絲很細，改用螢幕距離挑最近的一支（14 px 內）
+    const r=canvas.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top,w=r.width,hh=r.height,vv=new THREE.Vector3();let best=null;
+    for(const t of S.data.types){if(!S.on[t.k])continue;const P=S.data.p[t.k];for(let i=0;i<P.length;i+=6){vv.set(P[i]/10-1718.419,P[i+1]/10-1775.155,P[i+2]/10);const dc=vv.distanceTo(cam.position);vv.project(cam);if(vv.z>1)continue;
+      const d=Math.hypot((vv.x+1)/2*w-px,(1-vv.y)/2*hh-py);if(d<14&&(!best||d+dc*0.002<best.s))best={k:t.k,i:i/6,s:d+dc*0.002,dc}}}
+    if(!best)return;
+    v2.set(px/w*2-1,-py/hh*2+1);ray.setFromCamera(v2,cam);const others=Object.keys(G).map(k=>G[k].mesh).filter(m=>m&&m.visible);const o=ray.intersectObjects(others,false)[0];
+    if(o&&o.distance<best.dc-25&&!xray)return;   // 實體顯示時，被木構擋住超過 25 cm 的不選
+    const h={object:{userData:{screw:best.k}},instanceId:best.i};
+    setTimeout(()=>{if(typeof clearPick==='function')clearPick();select(h.object.userData.screw,h.instanceId)},0)});
+})();
 </script>
 </body>
 </html>
