@@ -84,6 +84,11 @@ footer{margin-top:16px;font-size:12px;color:var(--mute)}
 #msnap .t{font-size:12px;color:var(--mute);margin-bottom:2px}
 #mres{position:absolute;left:50%;top:52px;transform:translateX(-50%);background:var(--panel);border:1px solid #e4572e;border-radius:10px;padding:6px 12px;font-size:13px;z-index:3;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.12)}
 #mres b{font-size:16px;color:#e4572e}
+#scnav{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);background:var(--panel);border:2px solid #e6a800;border-radius:10px;padding:6px 10px;font-size:13px;z-index:3;box-shadow:0 4px 16px rgba(0,0,0,.15);display:flex;gap:6px;align-items:center;flex-wrap:wrap;max-width:calc(100% - 24px)}
+#scnav .t{min-width:0}#scnav b{color:#b07d00}
+#scnav button{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:3px 10px;cursor:pointer;color:var(--ink)}
+#scnav button:hover{background:var(--chip)}
+.scloc{font-size:11.5px;margin-left:6px;padding:0 6px;border:1px solid #e6a800;border-radius:5px;background:transparent;color:#b07d00;cursor:pointer}
 #mres button{font:inherit;font-size:12px;margin-left:8px;border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:2px 8px;cursor:pointer}
 .mmark{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border:2px solid #e4572e;pointer-events:none;z-index:2;box-sizing:border-box}
 .mmark.end{border-radius:0}.mmark.mid{border-radius:0;transform:rotate(45deg)}.mmark.near{border-radius:50%}.mmark.perp{border-width:0 0 2px 2px}
@@ -251,6 +256,7 @@ select{font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--line);
   <h2>更新紀錄</h2>
   <table class="log">
     <tr><th>日期</th><th>內容</th></tr>
+    <tr><td>2026-11-18</td><td>木構螺絲各規格旁新增「定位」：只顯示該規格，依 2.5 m 方格分成數「處」，相機放大到第 1 處並以亮黃色加粗顯示（可透過木構看到）；下方工具列「上一處／下一處」逐處瀏覽、「看全部」看該規格所有位置。點 3D 上的螺絲，資料卡也可「逐處瀏覽此規格」。</td></tr>
     <tr><td>2026-11-18</td><td>移除「11/13 進場」分頁與 3D 上方「11月13號進場鋼構」按鈕（已不需要）。</td></tr>
     <tr><td>2026-11-18</td><td>左側新增「圖層」分頁並設為第一個、開網站預設顯示（與 3D 右上「圖層」面板同步）。</td></tr>
     <tr><td>2026-11-18</td><td>3D 點選物件後，旋轉中心自動移到該物件；右上新增視角方塊（上／北／東／南／西，方位環隨視角轉動）與導覽列（環轉、平移、放大、縮小、全部、等角、仰視）；新增兩點量距（距離與 ΔX／ΔY／ΔZ，mm），可吸附端點、中點、垂足、最近點。另補建 2F RC 樓版（示意，頂 400 cm、厚 15 cm 待確認）。</td></tr>
@@ -303,7 +309,7 @@ select{font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--line);
   <div id="card" hidden></div>
   <div id="vc" title="視角方塊：點「上」看平面、點方位字看該側立面（北＝模型 +Y，待確認）"><div class="ring" id="vcring"><b data-v="N" style="left:50%;top:0">北</b><b data-v="E" style="left:100%;top:50%">東</b><b data-v="S" style="left:50%;top:100%">南</b><b data-v="W" style="left:0;top:50%">西</b></div><div class="face" id="vcface" data-v="T">上</div></div>
   <div id="msnap" hidden><div class="t">吸附</div><label><input type="checkbox" data-s="end" checked>端點</label><label><input type="checkbox" data-s="mid" checked>中點</label><label><input type="checkbox" data-s="perp" checked>垂足（對第一點）</label><label><input type="checkbox" data-s="near" checked>最近點（表面）</label></div>
-  <div id="mres" hidden></div><div id="mlay"></div>
+  <div id="mres" hidden></div><div id="scnav" hidden></div><div id="mlay"></div>
   <div id="nav" aria-label="導覽列"><button id="nvorbit" class="on" title="環轉（左鍵拖曳旋轉）">⟳</button><button id="nvpan" title="平移（左鍵拖曳平移）">✋</button><hr><button id="nvin" title="放大">＋</button><button id="nvout" title="縮小">－</button><button id="nvfit" title="縮放到全部">⤢</button><hr><button id="nvmeas" title="兩點量距（點兩下量距離；Esc 或再按一次結束）">📏</button><button id="nvsnap" title="吸附設定">⌖</button><hr><button id="nviso" title="等角視圖">◩</button><button id="nvbot" title="仰視（從下往上看）">下</button></div>
   <div class="hint" id="hint">拖曳旋轉・滾輪縮放・右鍵平移・點物件看資料並設為旋轉中心・右上視角方塊切換視圖・📏 兩點量距</div>
 </main>
@@ -970,7 +976,7 @@ function setSetout(on){if(on===soOn)return;soOn=on;
     ms.forEach(m=>{m.instanceMatrix.needsUpdate=true;m.frustumCulled=false;m.userData.screw=t.k;m.visible=false;scene.add(m)});
     return S.mesh[t.k]=ms}
   function apply(){if(!S.data)return;S.data.types.forEach(t=>{const on=!!S.on[t.k];if(on&&ready3d)build(t);const ms=S.mesh[t.k];if(ms)ms.forEach(m=>m.visible=on)});
-    if(S.sel&&!S.on[S.sel.k])clearSel();requestRender();sync()}
+    if(S.sel&&!S.on[S.sel.k])clearSel();if(S.nav&&!S.on[S.nav.k])navClose();requestRender();sync()}
   function set(keys,on){if(on&&!S.data){msg('螺絲資料下載中…');load().then(()=>{keys=keys==='*'?S.data.types.map(t=>t.k):keys;keys.forEach(k=>S.on[k]=on);apply();msg('')}).catch(e=>msg(e.message));return}
     if(keys==='*')keys=S.data?S.data.types.map(t=>t.k):[];keys.forEach(k=>S.on[k]=on);apply()}
   function msg(t){document.querySelectorAll('.scmsg').forEach(e=>e.textContent=t)}
@@ -987,24 +993,59 @@ function setSetout(on){if(on===soOn)return;soOn=on;
     h+=`<label class="lyi"><input type="checkbox" data-sall="1"><span class="sw" style="background:#c0392b"></span><b>木構螺絲 全部</b>　${fmt(tot)} 支</label>`;
     LINES.forEach(li=>{const ts=ty.filter(t=>t.line===li).sort((a,b)=>b.n-a.n);if(!ts.length)return;const n=ts.reduce((s,t)=>s+t.n,0),op=!!S.open[li];
       h+=`<div class="lyi" style="padding-left:14px"><button class="lk sctog" data-so="${esc(li)}" aria-expanded="${op}" style="padding:0 2px">${op?'▾':'▸'}</button><label style="display:flex;gap:6px;align-items:flex-start;cursor:pointer"><input type="checkbox" data-sl="${esc(li)}"><span class="sw" style="background:${LCOL[li]}"></span>${esc(li)}　${fmt(n)} 支</label></div>`;
-      if(op)ts.forEach(t=>{h+=`<label class="lyi" style="padding-left:44px"><input type="checkbox" data-sk="${esc(t.k)}"><span>${esc(t.spec||t.name)}${t.eu?'<small class="muted">　'+t.eu+'</small>':''}<small class="muted">　原 ${esc(t.k)}</small>　<b>${fmt(t.n)}</b> 支</span></label>`})});
+      if(op)ts.forEach(t=>{h+=`<div class="lyi" style="padding-left:44px"><label style="display:flex;gap:6px;align-items:flex-start;cursor:pointer;flex:1"><input type="checkbox" data-sk="${esc(t.k)}"><span>${esc(t.spec||t.name)}${t.eu?'<small class="muted">　'+t.eu+'</small>':''}<small class="muted">　原 ${esc(t.k)}</small>　<b>${fmt(t.n)}</b> 支</span></label><button class="scloc" data-sloc="${esc(t.k)}" title="只顯示此規格、放大並逐處瀏覽">定位</button></div>`})});
     h+='<div class="muted scmsg"></div><div class="muted" style="margin-top:4px;font-size:12px">位置取自 BG&amp;E REV09 模型（2026-04-21）；型號對照 Eurotec 替代 BOM。點 3D 上的螺絲看料號。A 梯梁非 Eurotec，以原型號為準。</div>';
     host.innerHTML=h;
     host.querySelector('[data-sall]').onchange=e=>set('*',e.target.checked);
     host.querySelectorAll('[data-sa]').forEach(b=>b.onclick=()=>set('*',b.dataset.sa==='1'));
     host.querySelectorAll('input[data-sl]').forEach(c=>c.onchange=()=>set(ty.filter(t=>t.line===c.dataset.sl).map(t=>t.k),c.checked));
     host.querySelectorAll('input[data-sk]').forEach(c=>c.onchange=()=>set([c.dataset.sk],c.checked));
+    host.querySelectorAll('[data-sloc]').forEach(b=>b.onclick=e=>{e.preventDefault();locate(b.dataset.sloc)});
     host.querySelectorAll('.sctog').forEach(b=>b.onclick=e=>{e.preventDefault();S.open[b.dataset.so]=!S.open[b.dataset.so];screwPanel(box)});
     sync()};
+  // ---- 定位：只顯示一種規格，依 2.5 m 方格分「處」，逐處放大（2026-11-18）----
+  const CELL=2500, OX=1718.419, OY=1775.155;
+  S.cl={};S.nav=null;let navM=null;
+  function clusters(t){if(S.cl[t.k])return S.cl[t.k];const P=S.data.p[t.k],m=new Map();
+    for(let i=0;i<P.length/6;i++){const key=Math.floor(P[i*6]/CELL)+','+Math.floor(P[i*6+1]/CELL)+','+Math.floor(P[i*6+2]/CELL);let g=m.get(key);if(!g)m.set(key,g={idx:[],a:[1e12,1e12,1e12],b:[-1e12,-1e12,-1e12]});g.idx.push(i);
+      for(let j=0;j<3;j++){const v=P[i*6+j];if(v<g.a[j])g.a[j]=v;if(v>g.b[j])g.b[j]=v}}
+    const L=[...m.values()];L.forEach(g=>g.c=[0,1,2].map(j=>(g.a[j]+g.b[j])/2));
+    // 由低樓層往上，同層由南往北、由西往東（2.5 m 方格內）
+    L.sort((p,q)=>Math.floor(p.c[2]/1000)-Math.floor(q.c[2]/1000)||Math.floor(p.c[1]/CELL)-Math.floor(q.c[1]/CELL)||p.c[0]-q.c[0]);
+    return S.cl[t.k]=L}
+  function toCm(v,j){return j===0?v/10-OX:j===1?v/10-OY:v/10}
+  function navMesh(t,g){if(navM){navM.forEach(m=>{scene.remove(m);m.geometry.dispose()});navM=null}if(!ready3d)return;
+    const P=S.data.p[t.k],n=g.idx.length,L=Math.max(t.L,5)/10,r=Math.max(t.hd/20*1.2,1.2);
+    const sh=new THREE.CylinderGeometry(r*0.55,r*0.55,L,8,1,false),hd=new THREE.CylinderGeometry(r*1.2,r*1.2,Math.max(L*0.12,0.8),12);hd.translate(0,L/2,0);
+    const mat=new THREE.MeshBasicMaterial({color:'#ffc400',depthTest:false,transparent:true,opacity:.95}),mh=new THREE.MeshBasicMaterial({color:'#e05a00',depthTest:false,transparent:true,opacity:.95});
+    const ms=[new THREE.InstancedMesh(sh,mat,n),new THREE.InstancedMesh(hd,mh,n)];
+    const m4=new THREE.Matrix4(),q=new THREE.Quaternion(),up=new THREE.Vector3(0,1,0),v=new THREE.Vector3(),p=new THREE.Vector3(),one=new THREE.Vector3(1,1,1);
+    g.idx.forEach((i,k)=>{p.set(toCm(P[i*6],0),toCm(P[i*6+1],1),P[i*6+2]/10);v.set(P[i*6+3],P[i*6+4],P[i*6+5]).normalize();q.setFromUnitVectors(up,v);m4.compose(p,q,one);ms[0].setMatrixAt(k,m4);ms[1].setMatrixAt(k,m4)});
+    ms.forEach(m=>{m.instanceMatrix.needsUpdate=true;m.frustumCulled=false;m.renderOrder=11;scene.add(m)});navM=ms}
+  function navGo(i){const nv=S.nav;if(!nv)return;const t=S.data.types.find(u=>u.k===nv.k),L=clusters(t);if(!L.length)return;nv.i=(i+L.length)%L.length;const g=L[nv.i];
+    navMesh(t,g);const pad=40;
+    frame(new THREE.Vector3(toCm(g.a[0],0)-pad,toCm(g.a[1],1)-pad,g.a[2]/10-pad),new THREE.Vector3(toCm(g.b[0],0)+pad,toCm(g.b[1],1)+pad,g.b[2]/10+pad));
+    const el=$('scnav');el.hidden=false;
+    el.innerHTML=`<span class="t"><b>${esc(t.eu?('Eurotec '+t.eu+' '+t.spec):t.k)}</b>　第 <b>${nv.i+1}</b>／${L.length} 處　本處 ${fmt(g.idx.length)} 支<small class="muted">（共 ${fmt(t.n)} 支，原 ${esc(t.k)}；中心 X ${Math.round(g.c[0])} Y ${Math.round(g.c[1])} Z ${Math.round(g.c[2])} mm）</small></span>`+
+      `<button data-nv="-1" aria-label="上一處">◀ 上一處</button><button data-nv="1" aria-label="下一處">下一處 ▶</button><button data-nv="all">看全部</button><button data-nv="x" aria-label="關閉">×</button>`;
+    el.querySelectorAll('[data-nv]').forEach(b=>b.onclick=()=>{const a=b.dataset.nv;if(a==='x')navClose();else if(a==='all')navAll();else navGo(nv.i+(+a))});requestRender()}
+  function navAll(){const nv=S.nav;if(!nv)return;const t=S.data.types.find(u=>u.k===nv.k),L=clusters(t);const a=[1e12,1e12,1e12],b=[-1e12,-1e12,-1e12];
+    L.forEach(g=>{for(let j=0;j<3;j++){a[j]=Math.min(a[j],g.a[j]);b[j]=Math.max(b[j],g.b[j])}});
+    const all={idx:L.flatMap(g=>g.idx)};navMesh(t,all);frame(new THREE.Vector3(toCm(a[0],0),toCm(a[1],1),a[2]/10),new THREE.Vector3(toCm(b[0],0),toCm(b[1],1),b[2]/10))}
+  function navClose(){S.nav=null;if(navM){navM.forEach(m=>{scene.remove(m);m.geometry.dispose()});navM=null}const el=$('scnav');if(el)el.hidden=true;requestRender()}
+  function locate(k,i){const go=()=>{S.data.types.forEach(u=>S.on[u.k]=u.k===k);S.nav={k,i:0};apply();navGo(i||0)};
+    if(!S.data){msg('螺絲資料下載中…');load().then(()=>{msg('');go()}).catch(e=>msg(e.message))}else go()}
+  window.screwLocate=locate;
   // ---- 點選螺絲 ----
   let hl=null;
   function clearSel(){S.sel=null;if(hl){scene.remove(hl);hl.geometry.dispose();hl=null}}
   function card(t,i){const P=S.data.p[t.k],x=P[i*6],y=P[i*6+1],z=P[i*6+2];const c=$('card');
     c.innerHTML=`<h4><span>${esc(t.eu?('Eurotec '+t.eu):t.k)}</span><button class="x" aria-label="關閉">×</button></h4><dl><dt>類別</dt><dd>木構螺絲／${esc(t.line)}</dd>`+
       (t.eu?`<dt>品名</dt><dd>${esc(t.name)}</dd><dt>規格</dt><dd>${esc(t.spec)} mm</dd>`:'')+`<dt>原型號</dt><dd>${esc(t.k)}（BG&amp;E 模型長 ${t.L} mm）</dd><dt>同規格</dt><dd>${fmt(t.n)} 支</dd><dt>位置</dt><dd>X ${x}　Y ${y}　Z ${z}（mm）</dd></dl>`+
-      `<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn" id="sconly">只顯示此規格</button><button class="btn" id="schide">隱藏此規格</button></div>`;
+      `<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn" id="sconly">只顯示此規格</button><button class="btn" id="schide">隱藏此規格</button><button class="btn" id="scloc">逐處瀏覽此規格</button></div>`;
     c.hidden=false;c.querySelector('.x').onclick=()=>{clearSel();c.hidden=true;requestRender()};
-    $('sconly').onclick=()=>{S.data.types.forEach(u=>S.on[u.k]=u.k===t.k);apply()};$('schide').onclick=()=>{S.on[t.k]=false;c.hidden=true;apply()}}
+    $('sconly').onclick=()=>{S.data.types.forEach(u=>S.on[u.k]=u.k===t.k);apply()};$('schide').onclick=()=>{S.on[t.k]=false;c.hidden=true;apply()};
+    $('scloc').onclick=()=>{const cl=clusters(t),ci=cl.findIndex(g=>g.idx.includes(i));c.hidden=true;clearSel();locate(t.k,ci<0?0:ci)}}
   function select(k,i){const t=S.data.types.find(u=>u.k===k);clearSel();S.sel={k,i};const ms=S.mesh[k],m4=new THREE.Matrix4();ms[0].getMatrixAt(i,m4);
     const g=new THREE.SphereGeometry(Math.max(t.L/20,2),12,8);hl=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:'#ffcc00',transparent:true,opacity:.55,depthTest:false}));
     hl.position.setFromMatrixPosition(m4);hl.renderOrder=10;scene.add(hl);card(t,i);requestRender()}
