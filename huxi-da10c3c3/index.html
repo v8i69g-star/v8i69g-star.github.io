@@ -41,7 +41,7 @@ th{font-size:12px;color:var(--mute);font-weight:500;border-top:0}
 .tso tbody tr{cursor:pointer}.tso tbody tr.on{background:var(--sel)}
 #bso.on{background:#1f5f99;color:#fff;border-color:#1f5f99}
 #blayer.on{background:var(--ink);color:var(--panel);border-color:var(--ink)}
-#layers{position:absolute;right:12px;top:48px;width:min(240px,calc(100% - 24px));max-height:calc(100% - 96px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:2}
+#layers{position:absolute;right:68px;top:48px;width:min(240px,calc(100% - 24px));max-height:calc(100% - 96px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:2}
 #layers[hidden]{display:none}#layers .lyh{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:4px}#layers .x{border:0;background:none;color:var(--mute);cursor:pointer;font-size:18px;line-height:1}
 #layers .lys{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--mute);margin:8px 0 2px}#layers .lk{font:inherit;font-size:11.5px;border:0;background:none;color:var(--accent);cursor:pointer;padding:0 4px}
 #layers .lyi{display:flex;gap:6px;align-items:flex-start;padding:3px 0;cursor:pointer}#layers .lyi input{margin:2px 0 0}
@@ -73,6 +73,19 @@ footer{margin-top:16px;font-size:12px;color:var(--mute)}
 .filters button{font:inherit;font-size:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:12px;padding:2px 9px;cursor:pointer}
 .filters button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .note{font-size:11.5px;color:var(--mute);line-height:1.55;margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
+
+/* ==== 視角方塊與導覽列（2026-11-18）==== */
+#vc{position:absolute;right:10px;top:10px;width:96px;height:96px;user-select:none;-webkit-user-select:none;z-index:2}
+#vc .ring{position:absolute;inset:6px;border-radius:50%;border:9px solid rgba(120,128,138,.45);transform-origin:50% 50%}
+#vc .ring b{position:absolute;font-size:12px;font-weight:600;color:var(--ink);background:var(--panel);border-radius:4px;padding:0 3px;cursor:pointer;line-height:16px;transform:translate(-50%,-50%)}
+#vc .ring b:hover,#vc .face:hover{background:#e4572e;color:#fff}
+#vc .face{position:absolute;left:31px;top:31px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:var(--panel);border:1px solid #8a939c;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer;transform-origin:50% 50%}
+#nav{position:absolute;right:20px;top:114px;display:flex;flex-direction:column;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:4px;z-index:2}
+#nav button{width:36px;height:32px;font:inherit;font-size:15px;line-height:1;border:1px solid transparent;background:transparent;color:var(--ink);border-radius:6px;cursor:pointer;padding:0}
+#nav button:hover{background:rgba(0,0,0,.06)}
+#nav button.on{background:#e4572e;color:#fff}
+#nav hr{border:0;border-top:1px solid var(--line);margin:1px 2px}
+@media (max-width:760px){#vc{transform:scale(.8);transform-origin:100% 0;right:6px;top:6px}#nav{top:92px;right:10px}#nav button{width:32px;height:28px;font-size:14px}#layers{right:56px}}
 .hint{position:absolute;right:12px;bottom:12px;font-size:12px;color:var(--mute);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 10px;opacity:.92}
 .top{position:absolute;left:12px;top:12px;display:flex;gap:6px}
 .top button{font:inherit;font-size:12.5px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:5px 10px;cursor:pointer}
@@ -228,6 +241,7 @@ select{font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--line);
   <h2>更新紀錄</h2>
   <table class="log">
     <tr><th>日期</th><th>內容</th></tr>
+    <tr><td>2026-11-18</td><td>3D 點選物件後，旋轉中心自動移到該物件；右上新增視角方塊（上／北／東／南／西，方位環隨視角轉動）與導覽列（環轉、平移、放大、縮小、全部、等角、仰視）。另補建 2F RC 樓版（示意，頂 400 cm、厚 15 cm 待確認）。</td></tr>
     <tr><td>2026-11-18</td><td>3D 新增「圖層」面板：所有類別可個別或分區（木構、鋼構、五金與鋼板、參考）開關；所有物件都可點選，資料卡可「隱藏此物件」或隱藏整個類別，「全部顯示」或圖層面板可全部取消隱藏。鋼構、五金等沒有逐件資料的類別，依網格相連自動分件。</td></tr>
     <tr><td>2026-11-18</td><td>「鋼構預埋件」新增放樣板中心距與方向：相鄰中心斜距 16 組與 X／Y 分量、P14／P15 到 A 梯上緣距離、4 條共線線組與 P04／P07 最近兩角定位；可下載中心距 DWG／PDF／CSV、方向圖解 R2、P14P15 到 A 梯放大圖。</td></tr>
     <tr><td>2026-11-17</td><td>新增「放樣」分頁與 3D 上方「放樣模式」按鈕：上部建物全部隱藏，只留基礎放樣物件與鋼構柱腳放樣板 15 座中心點、樓梯錨栓，由上往下看，點表格可定位。</td></tr>
@@ -276,7 +290,9 @@ select{font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--line);
   <div id="layers" hidden></div>
   <div id="labels"></div>
   <div id="card" hidden></div>
-  <div class="hint" id="hint">拖曳旋轉・滾輪縮放・右鍵平移・點物件看資料、可隱藏・「圖層」開關類別</div>
+  <div id="vc" title="視角方塊：點「上」看平面、點方位字看該側立面（北＝模型 +Y，待確認）"><div class="ring" id="vcring"><b data-v="N" style="left:50%;top:0">北</b><b data-v="E" style="left:100%;top:50%">東</b><b data-v="S" style="left:50%;top:100%">南</b><b data-v="W" style="left:0;top:50%">西</b></div><div class="face" id="vcface" data-v="T">上</div></div>
+  <div id="nav" aria-label="導覽列"><button id="nvorbit" class="on" title="環轉（左鍵拖曳旋轉）">⟳</button><button id="nvpan" title="平移（左鍵拖曳平移）">✋</button><hr><button id="nvin" title="放大">＋</button><button id="nvout" title="縮小">－</button><button id="nvfit" title="縮放到全部">⤢</button><hr><button id="nviso" title="等角視圖">◩</button><button id="nvbot" title="仰視（從下往上看）">下</button></div>
+  <div class="hint" id="hint">拖曳旋轉・滾輪縮放・右鍵平移・點物件看資料並設為旋轉中心・右上視角方塊切換視圖</div>
 </main>
 </div>
 <script>
@@ -386,7 +402,7 @@ function tick(){need=false;
   inTick=true;let moving=ctl.update();inTick=false;   // 阻尼仍在滑動時回傳 true（update 內觸發的 change 不另排程）
   // 模型尺度數千公分，阻尼尾巴要好幾秒才低於 OrbitControls 的門檻；每幀移動 <0.2 cm 就視為靜止
   if(moving&&!fly&&cam.position.distanceTo(p0)<0.2&&ctl.target.distanceTo(t0)<0.2)moving=false;
-  renderer.render(scene,cam);placeLabels();
+  renderer.render(scene,cam);placeLabels();vcSync();
   if(fly||moving)requestRender();
 }
 function resize(){if(!renderer)return;const w=main.clientWidth,h=main.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();requestRender()}
@@ -616,7 +632,33 @@ function pick(k,p,fly){selPiece={k,p};if(overlay){scene.remove(overlay);overlay.
   geo.setIndex(new THREE.BufferAttribute(p.comp?p.idx:g.fullIdx.slice(p.t0*3,p.t1*3),1));
   overlay=new THREE.Mesh(geo,new THREE.MeshPhongMaterial({color:'#e4572e',flatShading:true,side:THREE.DoubleSide,shininess:0,specular:0,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));
   scene.add(overlay);showCard(k,p);
+  if(!fly)pivotTo(p.bmin,p.bmax);
   if(fly)frame(new THREE.Vector3(...p.bmin).addScalar(-60),new THREE.Vector3(...p.bmax).addScalar(60));requestRender()}
+
+// ==== 選取物件為旋轉中心、視角方塊、導覽列（2026-11-18）====
+// 選到物件時，相機位置不動，把環轉中心（OrbitControls target）平順移到物件中心
+function pivotTo(bmin,bmax){if(!ready3d||!bmin)return;const c=new THREE.Vector3((bmin[0]+bmax[0])/2,(bmin[1]+bmax[1])/2,(bmin[2]+bmax[2])/2);
+  if(reduce){ctl.target.copy(c);requestRender();return}
+  fly={p0:cam.position.clone(),t0:ctl.target.clone(),p1:cam.position.clone(),t1:c,s:performance.now()};requestRender()}
+// 視角：以目前環轉中心與距離換方向；北＝+Y、東＝+X
+const VDIR={T:[0,-0.0015,1],B:[0,-0.0015,-1],N:[0,1,0.0001],S:[0,-1,0.0001],E:[1,0,0.0001],W:[-1,0,0.0001],I:[-0.55,-0.9,0.62]};
+function setView(v){if(!ready3d)return;const d=cam.position.distanceTo(ctl.target),t=ctl.target.clone();
+  const to=t.clone().addScaledVector(new THREE.Vector3(...VDIR[v]).normalize(),d);
+  if(reduce){cam.position.copy(to);requestRender();return}
+  fly={p0:cam.position.clone(),t0:t.clone(),p1:to,t1:t,s:performance.now()};requestRender()}
+function vcSync(){const r=$('vcring'),f=$('vcface');if(!r||!cam)return;const o=new THREE.Vector3().subVectors(cam.position,ctl.target);
+  const az=Math.atan2(o.x,o.y)*180/Math.PI;   // 相機在目標的哪個方位；方位環跟著轉，讓「北」指向畫面上的北
+  const rot=`rotate(${(az+180).toFixed(1)}deg)`;r.style.transform=rot;f.style.transform=rot;
+  r.querySelectorAll('b').forEach(b=>b.style.transform=`translate(-50%,-50%) rotate(${(-az-180).toFixed(1)}deg)`)}
+function zoomBy(k){if(!ready3d)return;const o=new THREE.Vector3().subVectors(cam.position,ctl.target).multiplyScalar(k);
+  if(o.length()<20)return;cam.position.copy(ctl.target).add(o);requestRender()}
+function setNavMode(pan){ctl.mouseButtons.LEFT=pan?THREE.MOUSE.PAN:THREE.MOUSE.ROTATE;ctl.mouseButtons.RIGHT=pan?THREE.MOUSE.ROTATE:THREE.MOUSE.PAN;
+  ctl.touches.ONE=pan?THREE.TOUCH.PAN:THREE.TOUCH.ROTATE;$('nvpan').classList.toggle('on',pan);$('nvorbit').classList.toggle('on',!pan)}
+(function navUI(){const vc=$('vc');if(!vc)return;
+  vc.addEventListener('click',e=>{const el=e.target.closest('[data-v]');if(el)setView(el.dataset.v)});
+  $('nvorbit').onclick=()=>setNavMode(false);$('nvpan').onclick=()=>setNavMode(true);
+  $('nvin').onclick=()=>zoomBy(0.7);$('nvout').onclick=()=>zoomBy(1/0.7);
+  $('nvfit').onclick=()=>{if(ready3d&&all)frame(all.min,all.max)};$('nviso').onclick=()=>setView('I');$('nvbot').onclick=()=>setView('B')})();
 function setupPicking(){const ray=new THREE.Raycaster(),v=new THREE.Vector2();let down=null;
   canvas.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,t:performance.now()}});
   canvas.addEventListener('pointerup',e=>{if(!down)return;const moved=Math.hypot(e.clientX-down.x,e.clientY-down.y),dt=performance.now()-down.t;down=null;
