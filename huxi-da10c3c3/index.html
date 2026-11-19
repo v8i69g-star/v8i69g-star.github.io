@@ -256,6 +256,7 @@ select{font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--line);
   <h2>更新紀錄</h2>
   <table class="log">
     <tr><th>日期</th><th>內容</th></tr>
+    <tr><td>2026-11-19</td><td>木構螺絲「定位」按鈕移到產品線那一層（不用展開就看得到），可整條產品線逐處瀏覽，工具列列出本處各規格支數；展開後各規格仍可單獨定位。</td></tr>
     <tr><td>2026-11-18</td><td>木構螺絲各規格旁新增「定位」：只顯示該規格，依 2.5 m 方格分成數「處」，相機放大到第 1 處並以亮黃色加粗顯示（可透過木構看到）；下方工具列「上一處／下一處」逐處瀏覽、「看全部」看該規格所有位置。點 3D 上的螺絲，資料卡也可「逐處瀏覽此規格」。</td></tr>
     <tr><td>2026-11-18</td><td>移除「11/13 進場」分頁與 3D 上方「11月13號進場鋼構」按鈕（已不需要）。</td></tr>
     <tr><td>2026-11-18</td><td>左側新增「圖層」分頁並設為第一個、開網站預設顯示（與 3D 右上「圖層」面板同步）。</td></tr>
@@ -976,7 +977,7 @@ function setSetout(on){if(on===soOn)return;soOn=on;
     ms.forEach(m=>{m.instanceMatrix.needsUpdate=true;m.frustumCulled=false;m.userData.screw=t.k;m.visible=false;scene.add(m)});
     return S.mesh[t.k]=ms}
   function apply(){if(!S.data)return;S.data.types.forEach(t=>{const on=!!S.on[t.k];if(on&&ready3d)build(t);const ms=S.mesh[t.k];if(ms)ms.forEach(m=>m.visible=on)});
-    if(S.sel&&!S.on[S.sel.k])clearSel();if(S.nav&&!S.on[S.nav.k])navClose();requestRender();sync()}
+    if(S.sel&&!S.on[S.sel.k])clearSel();if(S.nav&&!S.nav.keys.some(k=>S.on[k]))navClose();requestRender();sync()}
   function set(keys,on){if(on&&!S.data){msg('螺絲資料下載中…');load().then(()=>{keys=keys==='*'?S.data.types.map(t=>t.k):keys;keys.forEach(k=>S.on[k]=on);apply();msg('')}).catch(e=>msg(e.message));return}
     if(keys==='*')keys=S.data?S.data.types.map(t=>t.k):[];keys.forEach(k=>S.on[k]=on);apply()}
   function msg(t){document.querySelectorAll('.scmsg').forEach(e=>e.textContent=t)}
@@ -992,9 +993,9 @@ function setSetout(on){if(on===soOn)return;soOn=on;
     let h=`<div class="lys"><span>木構螺絲（Eurotec）</span><span><button class="lk" data-sa="1">開</button><button class="lk" data-sa="0">關</button></span></div>`;
     h+=`<label class="lyi"><input type="checkbox" data-sall="1"><span class="sw" style="background:#c0392b"></span><b>木構螺絲 全部</b>　${fmt(tot)} 支</label>`;
     LINES.forEach(li=>{const ts=ty.filter(t=>t.line===li).sort((a,b)=>b.n-a.n);if(!ts.length)return;const n=ts.reduce((s,t)=>s+t.n,0),op=!!S.open[li];
-      h+=`<div class="lyi" style="padding-left:14px"><button class="lk sctog" data-so="${esc(li)}" aria-expanded="${op}" style="padding:0 2px">${op?'▾':'▸'}</button><label style="display:flex;gap:6px;align-items:flex-start;cursor:pointer"><input type="checkbox" data-sl="${esc(li)}"><span class="sw" style="background:${LCOL[li]}"></span>${esc(li)}　${fmt(n)} 支</label></div>`;
+      h+=`<div class="lyi" style="padding-left:14px"><button class="lk sctog" data-so="${esc(li)}" aria-expanded="${op}" style="padding:0 2px">${op?'▾':'▸'}</button><label style="display:flex;gap:6px;align-items:flex-start;cursor:pointer;flex:1"><input type="checkbox" data-sl="${esc(li)}"><span class="sw" style="background:${LCOL[li]}"></span>${esc(li)}　${fmt(n)} 支</label><button class="scloc" data-sloc="line:${esc(li)}" title="只顯示此產品線、放大並逐處瀏覽">定位</button></div>`;
       if(op)ts.forEach(t=>{h+=`<div class="lyi" style="padding-left:44px"><label style="display:flex;gap:6px;align-items:flex-start;cursor:pointer;flex:1"><input type="checkbox" data-sk="${esc(t.k)}"><span>${esc(t.spec||t.name)}${t.eu?'<small class="muted">　'+t.eu+'</small>':''}<small class="muted">　原 ${esc(t.k)}</small>　<b>${fmt(t.n)}</b> 支</span></label><button class="scloc" data-sloc="${esc(t.k)}" title="只顯示此規格、放大並逐處瀏覽">定位</button></div>`})});
-    h+='<div class="muted scmsg"></div><div class="muted" style="margin-top:4px;font-size:12px">位置取自 BG&amp;E REV09 模型（2026-04-21）；型號對照 Eurotec 替代 BOM。點 3D 上的螺絲看料號。A 梯梁非 Eurotec，以原型號為準。</div>';
+    h+='<div class="muted scmsg"></div><div class="muted" style="margin-top:4px;font-size:12px">按「定位」只顯示該產品線，放大到第 1 處，下方工具列可上一處／下一處；點 ▸ 展開可單看某一規格。<br>位置取自 BG&amp;E REV09 模型（2026-04-21）；型號對照 Eurotec 替代 BOM。點 3D 上的螺絲看料號。A 梯梁非 Eurotec，以原型號為準。</div>';
     host.innerHTML=h;
     host.querySelector('[data-sall]').onchange=e=>set('*',e.target.checked);
     host.querySelectorAll('[data-sa]').forEach(b=>b.onclick=()=>set('*',b.dataset.sa==='1'));
@@ -1003,37 +1004,48 @@ function setSetout(on){if(on===soOn)return;soOn=on;
     host.querySelectorAll('[data-sloc]').forEach(b=>b.onclick=e=>{e.preventDefault();locate(b.dataset.sloc)});
     host.querySelectorAll('.sctog').forEach(b=>b.onclick=e=>{e.preventDefault();S.open[b.dataset.so]=!S.open[b.dataset.so];screwPanel(box)});
     sync()};
-  // ---- 定位：只顯示一種規格，依 2.5 m 方格分「處」，逐處放大（2026-11-18）----
+  // ---- 定位：只顯示一種規格或一條產品線，依 2.5 m 方格分「處」，逐處放大（2026-11-18／11-19）----
   const CELL=2500, OX=1718.419, OY=1775.155;
   S.cl={};S.nav=null;let navM=null;
-  function clusters(t){if(S.cl[t.k])return S.cl[t.k];const P=S.data.p[t.k],m=new Map();
-    for(let i=0;i<P.length/6;i++){const key=Math.floor(P[i*6]/CELL)+','+Math.floor(P[i*6+1]/CELL)+','+Math.floor(P[i*6+2]/CELL);let g=m.get(key);if(!g)m.set(key,g={idx:[],a:[1e12,1e12,1e12],b:[-1e12,-1e12,-1e12]});g.idx.push(i);
-      for(let j=0;j<3;j++){const v=P[i*6+j];if(v<g.a[j])g.a[j]=v;if(v>g.b[j])g.b[j]=v}}
+  const typ=k=>S.data.types.find(u=>u.k===k);
+  // id：單一規格用規格 key；產品線用 'line:'+名稱。g.idx 是 [規格key, 第幾支]。
+  function clusters(id,keys){if(S.cl[id])return S.cl[id];const m=new Map();
+    keys.forEach(k=>{const P=S.data.p[k];for(let i=0;i<P.length/6;i++){const key=Math.floor(P[i*6]/CELL)+','+Math.floor(P[i*6+1]/CELL)+','+Math.floor(P[i*6+2]/CELL);let g=m.get(key);if(!g)m.set(key,g={idx:[],a:[1e12,1e12,1e12],b:[-1e12,-1e12,-1e12]});g.idx.push([k,i]);
+      for(let j=0;j<3;j++){const v=P[i*6+j];if(v<g.a[j])g.a[j]=v;if(v>g.b[j])g.b[j]=v}}});
     const L=[...m.values()];L.forEach(g=>g.c=[0,1,2].map(j=>(g.a[j]+g.b[j])/2));
     // 由低樓層往上，同層由南往北、由西往東（2.5 m 方格內）
     L.sort((p,q)=>Math.floor(p.c[2]/1000)-Math.floor(q.c[2]/1000)||Math.floor(p.c[1]/CELL)-Math.floor(q.c[1]/CELL)||p.c[0]-q.c[0]);
-    return S.cl[t.k]=L}
+    return S.cl[id]=L}
   function toCm(v,j){return j===0?v/10-OX:j===1?v/10-OY:v/10}
-  function navMesh(t,g){if(navM){navM.forEach(m=>{scene.remove(m);m.geometry.dispose()});navM=null}if(!ready3d)return;
-    const P=S.data.p[t.k],n=g.idx.length,L=Math.max(t.L,5)/10,r=Math.max(t.hd/20*1.2,1.2);
-    const sh=new THREE.CylinderGeometry(r*0.55,r*0.55,L,8,1,false),hd=new THREE.CylinderGeometry(r*1.2,r*1.2,Math.max(L*0.12,0.8),12);hd.translate(0,L/2,0);
+  function navMesh(g){if(navM){navM.forEach(m=>{scene.remove(m);m.geometry.dispose()});navM=null}if(!ready3d)return;
+    const by={};g.idx.forEach(([k,i])=>(by[k]=by[k]||[]).push(i));navM=[];
     const mat=new THREE.MeshBasicMaterial({color:'#ffc400',depthTest:false,transparent:true,opacity:.95}),mh=new THREE.MeshBasicMaterial({color:'#e05a00',depthTest:false,transparent:true,opacity:.95});
-    const ms=[new THREE.InstancedMesh(sh,mat,n),new THREE.InstancedMesh(hd,mh,n)];
     const m4=new THREE.Matrix4(),q=new THREE.Quaternion(),up=new THREE.Vector3(0,1,0),v=new THREE.Vector3(),p=new THREE.Vector3(),one=new THREE.Vector3(1,1,1);
-    g.idx.forEach((i,k)=>{p.set(toCm(P[i*6],0),toCm(P[i*6+1],1),P[i*6+2]/10);v.set(P[i*6+3],P[i*6+4],P[i*6+5]).normalize();q.setFromUnitVectors(up,v);m4.compose(p,q,one);ms[0].setMatrixAt(k,m4);ms[1].setMatrixAt(k,m4)});
-    ms.forEach(m=>{m.instanceMatrix.needsUpdate=true;m.frustumCulled=false;m.renderOrder=11;scene.add(m)});navM=ms}
-  function navGo(i){const nv=S.nav;if(!nv)return;const t=S.data.types.find(u=>u.k===nv.k),L=clusters(t);if(!L.length)return;nv.i=(i+L.length)%L.length;const g=L[nv.i];
-    navMesh(t,g);const pad=40;
+    for(const k in by){const t=typ(k),P=S.data.p[k],ids=by[k],n=ids.length,L=Math.max(t.L,5)/10,r=Math.max(t.hd/20*1.2,1.2);
+      const sh=new THREE.CylinderGeometry(r*0.55,r*0.55,L,8,1,false),hd=new THREE.CylinderGeometry(r*1.2,r*1.2,Math.max(L*0.12,0.8),12);hd.translate(0,L/2,0);
+      const ms=[new THREE.InstancedMesh(sh,mat,n),new THREE.InstancedMesh(hd,mh,n)];
+      ids.forEach((i,j)=>{p.set(toCm(P[i*6],0),toCm(P[i*6+1],1),P[i*6+2]/10);v.set(P[i*6+3],P[i*6+4],P[i*6+5]).normalize();q.setFromUnitVectors(up,v);m4.compose(p,q,one);ms[0].setMatrixAt(j,m4);ms[1].setMatrixAt(j,m4)});
+      ms.forEach(m=>{m.instanceMatrix.needsUpdate=true;m.frustumCulled=false;m.renderOrder=11;scene.add(m);navM.push(m)})}}
+  function navGo(i){const nv=S.nav;if(!nv)return;const L=clusters(nv.id,nv.keys);if(!L.length)return;nv.i=(i+L.length)%L.length;const g=L[nv.i];
+    navMesh(g);const pad=40;
     frame(new THREE.Vector3(toCm(g.a[0],0)-pad,toCm(g.a[1],1)-pad,g.a[2]/10-pad),new THREE.Vector3(toCm(g.b[0],0)+pad,toCm(g.b[1],1)+pad,g.b[2]/10+pad));
+    const tot=nv.keys.reduce((s,k)=>s+typ(k).n,0);
+    // 本處各規格支數（產品線模式時列出）
+    const cnt={};g.idx.forEach(([k])=>cnt[k]=(cnt[k]||0)+1);
+    const det=nv.keys.length>1?'：'+Object.entries(cnt).sort((a,b)=>b[1]-a[1]).map(([k,n])=>esc(typ(k).spec||k)+' '+n).join('、'):'';
     const el=$('scnav');el.hidden=false;
-    el.innerHTML=`<span class="t"><b>${esc(t.eu?('Eurotec '+t.eu+' '+t.spec):t.k)}</b>　第 <b>${nv.i+1}</b>／${L.length} 處　本處 ${fmt(g.idx.length)} 支<small class="muted">（共 ${fmt(t.n)} 支，原 ${esc(t.k)}；中心 X ${Math.round(g.c[0])} Y ${Math.round(g.c[1])} Z ${Math.round(g.c[2])} mm）</small></span>`+
+    el.innerHTML=`<span class="t"><b>${esc(nv.label)}</b>　第 <b>${nv.i+1}</b>／${L.length} 處　本處 ${fmt(g.idx.length)} 支${det}<small class="muted">（共 ${fmt(tot)} 支；中心 X ${Math.round(g.c[0])} Y ${Math.round(g.c[1])} Z ${Math.round(g.c[2])} mm）</small></span>`+
       `<button data-nv="-1" aria-label="上一處">◀ 上一處</button><button data-nv="1" aria-label="下一處">下一處 ▶</button><button data-nv="all">看全部</button><button data-nv="x" aria-label="關閉">×</button>`;
     el.querySelectorAll('[data-nv]').forEach(b=>b.onclick=()=>{const a=b.dataset.nv;if(a==='x')navClose();else if(a==='all')navAll();else navGo(nv.i+(+a))});requestRender()}
-  function navAll(){const nv=S.nav;if(!nv)return;const t=S.data.types.find(u=>u.k===nv.k),L=clusters(t);const a=[1e12,1e12,1e12],b=[-1e12,-1e12,-1e12];
+  function navAll(){const nv=S.nav;if(!nv)return;const L=clusters(nv.id,nv.keys);const a=[1e12,1e12,1e12],b=[-1e12,-1e12,-1e12];
     L.forEach(g=>{for(let j=0;j<3;j++){a[j]=Math.min(a[j],g.a[j]);b[j]=Math.max(b[j],g.b[j])}});
-    const all={idx:L.flatMap(g=>g.idx)};navMesh(t,all);frame(new THREE.Vector3(toCm(a[0],0),toCm(a[1],1),a[2]/10),new THREE.Vector3(toCm(b[0],0),toCm(b[1],1),b[2]/10))}
+    navMesh({idx:L.flatMap(g=>g.idx)});frame(new THREE.Vector3(toCm(a[0],0),toCm(a[1],1),a[2]/10),new THREE.Vector3(toCm(b[0],0),toCm(b[1],1),b[2]/10))}
   function navClose(){S.nav=null;if(navM){navM.forEach(m=>{scene.remove(m);m.geometry.dispose()});navM=null}const el=$('scnav');if(el)el.hidden=true;requestRender()}
-  function locate(k,i){const go=()=>{S.data.types.forEach(u=>S.on[u.k]=u.k===k);S.nav={k,i:0};apply();navGo(i||0)};
+  // locate('HBS8120') 單一規格；locate('line:HSPT 沉頭') 整條產品線
+  function locate(id,i){const go=()=>{let keys,label;
+      if(id.startsWith('line:')){const li=id.slice(5);keys=S.data.types.filter(t=>t.line===li).map(t=>t.k);label=li+'（全部規格）'}
+      else{const t=typ(id);keys=[id];label=t.eu?('Eurotec '+t.eu+' '+t.spec):t.k}
+      if(!keys.length)return;S.data.types.forEach(u=>S.on[u.k]=keys.includes(u.k));S.nav={id,keys,label,i:0};apply();navGo(i||0)};
     if(!S.data){msg('螺絲資料下載中…');load().then(()=>{msg('');go()}).catch(e=>msg(e.message))}else go()}
   window.screwLocate=locate;
   // ---- 點選螺絲 ----
@@ -1045,7 +1057,7 @@ function setSetout(on){if(on===soOn)return;soOn=on;
       `<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn" id="sconly">只顯示此規格</button><button class="btn" id="schide">隱藏此規格</button><button class="btn" id="scloc">逐處瀏覽此規格</button></div>`;
     c.hidden=false;c.querySelector('.x').onclick=()=>{clearSel();c.hidden=true;requestRender()};
     $('sconly').onclick=()=>{S.data.types.forEach(u=>S.on[u.k]=u.k===t.k);apply()};$('schide').onclick=()=>{S.on[t.k]=false;c.hidden=true;apply()};
-    $('scloc').onclick=()=>{const cl=clusters(t),ci=cl.findIndex(g=>g.idx.includes(i));c.hidden=true;clearSel();locate(t.k,ci<0?0:ci)}}
+    $('scloc').onclick=()=>{const cl=clusters(t.k,[t.k]),ci=cl.findIndex(g=>g.idx.some(e=>e[1]===i));c.hidden=true;clearSel();locate(t.k,ci<0?0:ci)}}
   function select(k,i){const t=S.data.types.find(u=>u.k===k);clearSel();S.sel={k,i};const ms=S.mesh[k],m4=new THREE.Matrix4();ms[0].getMatrixAt(i,m4);
     const g=new THREE.SphereGeometry(Math.max(t.L/20,2),12,8);hl=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:'#ffcc00',transparent:true,opacity:.55,depthTest:false}));
     hl.position.setFromMatrixPosition(m4);hl.renderOrder=10;scene.add(hl);card(t,i);requestRender()}
